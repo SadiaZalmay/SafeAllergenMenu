@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   SimpleGrid,
@@ -27,6 +27,9 @@ function App() {
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
   const navigate = useNavigate();
 
+  //for my own understanding, this function adding the checked allergens
+  //into the list of allergens if they r checked, but if they are already checked
+  //and we get another click on the checkbox then it removes that allergen from the list.
   const handleCheckboxChange = (allergen: string) => {
     setSelectedAllergens((prev) =>
       prev.includes(allergen)
@@ -34,7 +37,8 @@ function App() {
         : [...prev, allergen]
     );
   };
-
+  //after hitting submit, the selectedAllergens list
+  //is sent to the URL of next page App2
   const handleSubmit = () => {
     navigate("/App2", { state: { selectedAllergens } });
   };

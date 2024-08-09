@@ -14,19 +14,19 @@ import { useEffect, useState } from "react";
 import Previous from "./components/Previous";
 
 const App2 = () => {
-  const location = useLocation();
-  const { selectedAllergens } = location.state;
+  const location = useLocation(); //we get the data that was passed to App2 location
+  const { selectedAllergens } = location.state; //this line is destructuring selectedallrgens from location.state
   const [filteredMenu, setFilteredMenu] = useState([]);
 
   useEffect(() => {
     const fetchFilteredMenu = async () => {
       try {
-        const res = await axios.post("http://localhost:5000/filterMenu", {
+        const request = await axios.post("http://localhost:5000/filterMenu", {
           allergens: selectedAllergens,
         });
-        setFilteredMenu(res.data);
+        setFilteredMenu(request.data);
       } catch (err) {
-        console.log("Check What is wrong uff:", err);
+        console.log("I couldn't get the filtered menu, the problem is with the server:", err);
       }
     };
     fetchFilteredMenu();

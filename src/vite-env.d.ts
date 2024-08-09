@@ -12,4 +12,5 @@ declare module "../pages/Add" {
 declare module "../pages/Update" {
   const Update: any; // or use a more specific type if known
   export default Update;
+  
 }
