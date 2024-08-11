@@ -26,7 +26,7 @@ const App2 = () => {
         });
         setFilteredMenu(request.data);
       } catch (err) {
-        console.log("I couldn't get the filtered menu, the problem is with the server:", err);
+        console.log("I couldn't get the filtered menu, the problem is with the backend server:", err);
       }
     };
     fetchFilteredMenu();

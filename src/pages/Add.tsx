@@ -2,7 +2,7 @@ import React from "react";
 
 const Add = () =>{
     return(
-        <div>Add Menu</div>
+        <div>Add</div>
     )
 }
 

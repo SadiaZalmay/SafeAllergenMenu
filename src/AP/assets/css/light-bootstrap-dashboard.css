@@ -10,7 +10,13 @@ select::-moz-focus-inner,
 input[type="file"]>input[type="button"]::-moz-focus-inner {
     outline: 0;
 }
-
+.table td, .table th {
+    padding: 15px; /* Adjust padding for better spacing */
+  }
+  .table {
+    table-layout: fixed; /* Ensures consistent column width */
+  }
+  
 .ui-slider-handle:focus,
 .navbar-toggle,
 input:focus {
