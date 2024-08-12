@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const MenuAdd: React.FC = () => {
   const [menu, setMenu] = useState({
     name: "",
-    ingredient: "", // Ensure this is lowercase
+    ingredients: "", 
     allergens: "",
   });
 
@@ -19,13 +19,21 @@ const MenuAdd: React.FC = () => {
 
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
+    // Check if any of the fields are empty
+    // if (menu.name || menu.ingredients) {
+    //   alert("Please fill in all fields.");
+    //   return;
+    // }
+
     try {
-      await axios.post("http://localhost:5000/api/menu/menuadd", menu); // Corrected URL
+      await axios.post("http://localhost:5000/api/menuadd", menu);
       navigate("/AP"); // Go to home page
     } catch (err) {
       console.error(err);
     }
   };
+
   return (
     <div className="wrapper">
       <div
@@ -186,7 +194,7 @@ const MenuAdd: React.FC = () => {
                         <label>Ingredients</label>
                         <input
                           type="text"
-                          name="ingredient"
+                          name="ingredients"
                           className="form-control"
                           onChange={handleChange}
                         />

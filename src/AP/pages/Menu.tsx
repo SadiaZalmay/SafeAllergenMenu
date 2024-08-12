@@ -5,20 +5,32 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-//connecting to index.js
+//adding to the DB
 const Menu: React.FC = () => {
   const [menu, setMenu] = useState([]);
   useEffect(() => {
     const fetchAllMenu = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/menu");
+        const res = await axios.get("http://localhost:5000/api/menu/");
         setMenu(res.data);
       } catch (err) {
-        console.log(err);
+        console.error("Error during POST request:", err);
       }
     };
     fetchAllMenu();
   }, []);
+
+  //deleting from the DB
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/menu/${id}`);
+      // Fetch the updated menu list after deletion
+      const res = await axios.get("http://localhost:5000/api/menu/");
+      setMenu(res.data); // Update the menu state with the new data
+    } catch (err) {
+      console.error("Error during DELETE request:", err);
+    }
+  };
 
   // Function to capitalize each word
   const capitalizeWords = (str: string) => {
@@ -29,9 +41,11 @@ const Menu: React.FC = () => {
     <div className="wrapper">
       <div
         className="sidebar"
-        style={{
-          backgroundImage: `url('../assets/img/8a3af60e-5fb9-4a9e-817f-a5af303ba85d.avif')`,
-        }}
+        // style={{
+        //   backgroundImage: `url(${backgroundImage})`,
+        //   backgroundSize: 'cover', // Optional: Adjusts how the background image is displayed
+        //   backgroundPosition: 'center', // Optional: Centers the background image
+        // }}
       >
         <div className="sidebar-wrapper">
           <div className="logo">
@@ -170,96 +184,6 @@ const Menu: React.FC = () => {
                   <div className="card-header">
                     <h4 className="card-title">Menu</h4>
                   </div>
-                  <div className="card-body">
-                    <div className="table-full-width">
-                      <table className="table">
-                        <tbody>
-                          <tr>
-                            <td>
-                              <div
-                                className="modal fade"
-                                id="addadminpanelfile"
-                                tabIndex={-1}
-                                role="dialog"
-                                aria-labelledby="exampleModalLongTitle"
-                                aria-hidden="true"
-                              >
-                                <div className="modal-dialog" role="document">
-                                  <div className="modal-content">
-                                    <div className="modal-header">
-                                      <h5
-                                        className="modal-title"
-                                        id="exampleModalLongTitle"
-                                      >
-                                        Add
-                                      </h5>
-                                      <button
-                                        type="button"
-                                        className="close"
-                                        data-dismiss="modal"
-                                        aria-label="Close"
-                                      >
-                                        <span aria-hidden="true">&times;</span>
-                                      </button>
-                                    </div>
-                                    <form
-                                      action=""
-                                      method="post"
-                                      encType="multipart/form-data"
-                                    >
-                                      <div className="modal-body">
-                                        <div className="form-group">
-                                          <label>Name</label>
-                                          <input
-                                            type="text"
-                                            name="Name"
-                                            className="form-control"
-                                          />
-                                        </div>
-                                        <div className="form-group">
-                                          <label>Ingredients</label>
-                                          <textarea
-                                            cols={10}
-                                            rows={6}
-                                            name="Ingredients"
-                                            className="form-control"
-                                            placeholder="Enter Ingredients"
-                                          ></textarea>
-                                        </div>
-                                        <div className="form-group">
-                                          <label>Allergen</label>
-                                          <input
-                                            type="text"
-                                            name="Allergen"
-                                            className="form-control"
-                                          />
-                                        </div>
-                                      </div>
-                                      <div className="modal-footer">
-                                        <button
-                                          type="button"
-                                          className="btn btn-secondary"
-                                          data-dismiss="modal"
-                                        >
-                                          Close
-                                        </button>
-                                        <input
-                                          type="submit"
-                                          name="submit"
-                                          className="btn btn-primary"
-                                          value="Save"
-                                        />
-                                      </div>
-                                    </form>
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -322,22 +246,27 @@ const Menu: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {menu.map((object) => (
-                      <tr key={object.id}>
-                        <td>{capitalizeWords(object.name)}</td>
-                        <td>{capitalizeWords(object.ingredients)}</td>
-                        <td>{capitalizeWords(object.allergens)}</td>
+                    {menu.map((item) => (
+                      <tr key={item.id}>
+                        <td>{capitalizeWords(item.name)}</td>
+                        <td>{capitalizeWords(item.ingredients)}</td>
+                        <td>{capitalizeWords(item.allergens)}</td>
                         <td className="text-center">
-                          <a href="">
+                          <Link to={`/MenuEdit/${item.id}`}>
                             <Button variant="info" title="Edit Data">
-                              <i className="fa fa-edit"></i> Update
+                              <i className="fa fa-edit"></i> Edit
                             </Button>
-                          </a>
+                          </Link>
                         </td>
                         <td className="text-center">
                           <a href="">
-                            <Button variant="danger" title="Remove">
-                              <i className="fa fa-times"></i> Delete
+                            <Button
+                              type="button"
+                              onClick={() => handleDelete(item.id)}
+                              variant="danger"
+                              title="Remove"
+                            >
+                              Delete
                             </Button>
                           </a>
                         </td>
