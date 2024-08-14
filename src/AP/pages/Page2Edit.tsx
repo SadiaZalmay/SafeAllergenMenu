@@ -1,38 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../assets/css/light-bootstrap-dashboard.css"; // Custom styles
 import "../assets/css/bootstrap.min.css"; // Custom styles
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
-const MenuAdd: React.FC = () => {
-  const [menu, setMenu] = useState({
-    name: "",
-    ingredients: "", 
-    allergens: "",
+const Page2Edit: React.FC = () => {
+  const [page2, setPage2] = useState({
+    logo: "",
+    paragraph1: "",
+    paragraph2: "",
   });
 
-  const handleChange = (e: { target: { name: string; value: string } }) => {
-    setMenu((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPage2({ ...page2, [name]: value });
   };
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const page2Id = location.pathname.split("/")[2]; // Store the ID properly
 
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    // Check if any of the fields are empty
-    // if (menu.name || menu.ingredients) {
-    //   alert("Please fill in all fields.");
-    //   return;
-    // }
-
+    console.log("page2 ID:", page2Id);
+    console.log("page2 Data:", page2);
     try {
-      await axios.post("http://localhost:5000/api/menuadd", menu);
-      navigate("/AP"); // Go to home page
+      await axios.put(`http://localhost:5000/api/page2/${page2Id}`, page2);
+      navigate("/Page2"); // Go to home page
     } catch (err) {
-      console.error(err);
+      console.error("Error during PUT request:", err);
     }
   };
+  useEffect(() => {
+    const fetchPage2 = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/page2/${page2Id}`
+        );
+        setPage2({
+          logo: response.data.logo,
+          paragraph1: response.data.paragraph1,
+          paragraph2: response.data.paragraph2,
+        });
+      } catch (err) {
+        console.error("Error fetching page2 data:", err);
+      }
+    };
+
+    fetchPage2();
+  }, [page2Id]);
 
   return (
     <div className="wrapper">
@@ -47,17 +63,17 @@ const MenuAdd: React.FC = () => {
             <a className="simple-text">Electric Beets Allergen</a>
           </div>
           <ul className="nav">
-            <li className="nav-item">
+            <li className="nav-item ">
               <a className="nav-link" href="/Page1">
                 <p>Allergen Selection Page</p>
               </a>
             </li>
-            <li className="nav-item active">
+            <li className="nav-item ">
               <a className="nav-link" href="/AP">
                 <p>Menu</p>
               </a>
             </li>
-            <li className="nav-item">
+            <li className="nav-item active">
               <a className="nav-link" href="/Page2">
                 <p>Filtered Safe Menu Page</p>
               </a>
@@ -177,52 +193,51 @@ const MenuAdd: React.FC = () => {
               <div className="col-md-12">
                 <div className="card card-tasks">
                   <div className="card-header">
-                    <h4 className="card-title">Add to the Menu</h4>
+                    <h4 className="card-title">Edit Allergen Selection Page</h4>
                   </div>
-                  <form>
+                  <form action="" method="post" encType="multipart/form-data">
                     <div className="modal-body">
                       <div className="form-group">
-                        <label>Name</label>
+                        <label>Logo</label>
                         <input
                           type="text"
-                          name="name"
+                          name="logo"
                           className="form-control"
-                          onChange={handleChange}
+                          value={page2.logo}
+                          onChange={handleInputChange}
                         />
                       </div>
                       <div className="form-group">
-                        <label>Ingredients</label>
+                        <label>Allergen Notice</label>
                         <input
                           type="text"
-                          name="ingredients"
+                          name="paragraph1"
                           className="form-control"
-                          onChange={handleChange}
+                          value={page2.paragraph1}
+                          onChange={handleInputChange}
                         />
                       </div>
                       <div className="form-group">
-                        <label>Allergen</label>
+                        <label>Additional Allergen Disclaimer</label>
                         <input
                           type="text"
-                          name="allergens"
+                          name="paragraph2"
                           className="form-control"
-                          onChange={handleChange}
+                          value={page2.paragraph2}
+                          onChange={handleInputChange}
                         />
                       </div>
                     </div>
                     <div className="modal-footer float-left">
-                      <a href="/AP">
-                        <button
-                          type="button"
-                          className="btn btn-secondary"
-                          data-dismiss="modal"
-                        >
+                      <Link to="/Page2">
+                        <button type="button" className="btn btn-secondary">
                           Back
                         </button>
-                      </a>
+                      </Link>
                       <button
                         type="button"
-                        className="btn btn-primary"
                         onClick={handleClick}
+                        className="btn btn-primary"
                       >
                         Save
                       </button>
@@ -238,4 +253,4 @@ const MenuAdd: React.FC = () => {
   );
 };
 
-export default MenuAdd;
+export default Page2Edit;

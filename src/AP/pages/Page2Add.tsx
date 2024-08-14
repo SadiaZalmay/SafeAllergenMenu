@@ -1,34 +1,34 @@
 import React, { useState } from "react";
-import "../assets/css/light-bootstrap-dashboard.css"; // Custom styles
-import "../assets/css/bootstrap.min.css"; // Custom styles
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "../assets/css/light-bootstrap-dashboard.css";
+import "../assets/css/bootstrap.min.css";
 
-const MenuAdd: React.FC = () => {
-  const [menu, setMenu] = useState({
-    name: "",
-    ingredients: "", 
-    allergens: "",
+const Page2Add: React.FC = () => {
+  const [page2, setPage2] = useState({
+    logo: "",
+    paragraph1: "",
+    paragraph2: "",
   });
 
-  const handleChange = (e: { target: { name: string; value: string } }) => {
-    setMenu((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPage2((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const navigate = useNavigate();
 
-  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Check if any of the fields are empty
-    // if (menu.name || menu.ingredients) {
-    //   alert("Please fill in all fields.");
-    //   return;
-    // }
+    if (!page2.logo || !page2.paragraph1 || !page2.paragraph2) {
+      alert("Please fill in all fields.");
+      return;
+    }
 
     try {
-      await axios.post("http://localhost:5000/api/menuadd", menu);
-      navigate("/AP"); // Go to home page
+      await axios.post("http://localhost:5000/api/page2add", page2);
+      navigate("/Page2"); // Go to home page
     } catch (err) {
       console.error(err);
     }
@@ -47,17 +47,17 @@ const MenuAdd: React.FC = () => {
             <a className="simple-text">Electric Beets Allergen</a>
           </div>
           <ul className="nav">
-            <li className="nav-item">
+            <li className="nav-item ">
               <a className="nav-link" href="/Page1">
                 <p>Allergen Selection Page</p>
               </a>
             </li>
-            <li className="nav-item active">
+            <li className="nav-item ">
               <a className="nav-link" href="/AP">
                 <p>Menu</p>
               </a>
             </li>
-            <li className="nav-item">
+            <li className="nav-item active">
               <a className="nav-link" href="/Page2">
                 <p>Filtered Safe Menu Page</p>
               </a>
@@ -177,40 +177,42 @@ const MenuAdd: React.FC = () => {
               <div className="col-md-12">
                 <div className="card card-tasks">
                   <div className="card-header">
-                    <h4 className="card-title">Add to the Menu</h4>
+                    <h4 className="card-title">
+                      Add to the Allergen Selection page
+                    </h4>
                   </div>
-                  <form>
+                  <form onSubmit={handleClick}>
                     <div className="modal-body">
                       <div className="form-group">
-                        <label>Name</label>
+                        <label>Logo</label>
                         <input
                           type="text"
-                          name="name"
+                          name="logo"
                           className="form-control"
                           onChange={handleChange}
                         />
                       </div>
                       <div className="form-group">
-                        <label>Ingredients</label>
+                        <label>Allergen Notice</label>
                         <input
                           type="text"
-                          name="ingredients"
+                          name="paragraph1"
                           className="form-control"
                           onChange={handleChange}
                         />
                       </div>
                       <div className="form-group">
-                        <label>Allergen</label>
+                        <label>Additional Allergen Disclaimer</label>
                         <input
                           type="text"
-                          name="allergens"
+                          name="paragraph2"
                           className="form-control"
                           onChange={handleChange}
                         />
                       </div>
                     </div>
                     <div className="modal-footer float-left">
-                      <a href="/AP">
+                      <a href="/Page2">
                         <button
                           type="button"
                           className="btn btn-secondary"
@@ -220,9 +222,8 @@ const MenuAdd: React.FC = () => {
                         </button>
                       </a>
                       <button
-                        type="button"
+                        type="submit"
                         className="btn btn-primary"
-                        onClick={handleClick}
                       >
                         Save
                       </button>
@@ -238,4 +239,4 @@ const MenuAdd: React.FC = () => {
   );
 };
 
-export default MenuAdd;
+export default Page2Add;

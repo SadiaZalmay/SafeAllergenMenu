@@ -7,7 +7,14 @@ import { Link } from "react-router-dom";
 
 //adding to the DB
 const Menu: React.FC = () => {
-  const [menu, setMenu] = useState([]);
+  interface MenuItem {
+    id: number;
+    name: string;
+    ingredients: string;
+    allergens: string;
+  }
+  
+  const [menu, setMenu] = useState<MenuItem[]>([]);
   useEffect(() => {
     const fetchAllMenu = async () => {
       try {
@@ -19,6 +26,7 @@ const Menu: React.FC = () => {
     };
     fetchAllMenu();
   }, []);
+  
 
   //deleting from the DB
   const handleDelete = async (id: number) => {
@@ -53,17 +61,17 @@ const Menu: React.FC = () => {
           </div>
           <ul className="nav">
             <li className="nav-item">
-              <a className="nav-link" href="Page1.tsx">
+              <a className="nav-link" href="/Page1">
                 <p>Allergen Selection Page</p>
               </a>
             </li>
             <li className="nav-item active">
-              <a className="nav-link" href="Menu.tsx">
+              <a className="nav-link" href="/AP">
                 <p>Menu</p>
               </a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="Page2.tsx">
+              <a className="nav-link" href="/Page2">
                 <p>Filtered Safe Menu Page</p>
               </a>
             </li>
@@ -113,7 +121,7 @@ const Menu: React.FC = () => {
                     className="dropdown-menu"
                     aria-labelledby="navbarDropdownMenuLink"
                   >
-                    <a className="dropdown-item" href="ChangePassword.tsx">
+                    <a className="dropdown-item" href="/ChangePassword">
                       Change Password
                     </a>
                     <div className="divider"></div>
@@ -168,7 +176,7 @@ const Menu: React.FC = () => {
                 >
                   Cancel
                 </button>
-                <a href="logout.tsx" className="btn btn-primary">
+                <a href="/Logout" className="btn btn-primary">
                   Logout
                 </a>
               </div>

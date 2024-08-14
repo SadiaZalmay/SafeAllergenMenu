@@ -1,129 +1,299 @@
+//==============================
+//          IMPORTS
+//==============================
 import cors from "cors"; // Allows using the server
 import express from "express"; // Library: makes it easy to handle requests & responses
 import mysql from "mysql2"; // Helps with connecting to the database
 
-// Create an Express application to serve data to clients
-const app = express();
+//==============================
+//      INITIALIZATION
+//==============================
+const app = express(); // Create an Express application
 
 // MySQL connection setup
 const connection = mysql.createConnection({
   host: "127.0.0.1",
   user: "root",
-  password: "",
-  database: "allergen",
+  password: "", 
+  database: "allergen", 
   port: 3306,
 });
 
-app.use(
-  cors({
-    origin: "http://localhost:3000", // Only this URL is allowed to go backend n fetch data
-    methods: ["GET", "POST", "DELETE", "PUT"], // Allowed methods
-    credentials: true, // Allowing cookies to be sent with the data from server
-  })
-);
+//==============================
+//         MIDDLEWARE
+//==============================
+app.use(cors({
+  origin: "http://localhost:3000", // Only this URL is allowed to access the backend
+  methods: ["GET", "POST", "DELETE", "PUT"], // Allowed HTTP methods
+  credentials: true, // Allowing cookies to be sent with the data from the server
+}));
 
-app.use(express.json());
+app.use(express.json()); // Parse JSON bodies
 
-// Getting Data from DB
+//==============================
+//        ROUTES
+//==============================
+
+//---------------------------------
+//       GET MENU DATA
+//---------------------------------
 app.get("/api/menu/", (req, res) => {
-  const q = "SELECT * FROM menu";
-  connection.query(q, (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
+  const query = "SELECT * FROM menu"; // SQL query to fetch all menu items
+  connection.query(query, (err, data) => {
+    if (err) return res.json(err); // Handle error
+    return res.json(data); // Send data as JSON response
   });
 });
 
-// Adding Data to DB
+//---------------------------------
+//       ADD MENU ITEM
+//---------------------------------
 app.post("/api/menuadd", (req, res) => {
-  const q = "INSERT INTO menu (`name`, `ingredients`, `allergens`) VALUES (?)";
-  const values = [req.body.name, req.body.ingredients, req.body.allergens];
+  const query = "INSERT INTO menu (`name`, `ingredients`, `allergens`) VALUES (?)"; // SQL query to insert a new menu item
+  const values = [req.body.name, req.body.ingredients, req.body.allergens]; // Values from request body
 
-  connection.query(q, [values], (err) => {
-    if (err) return res.status(500).json(err);
-    return res.json("Item has been added to the Menu.");
+  connection.query(query, [values], (err) => {
+    if (err) return res.status(500).json(err); // Handle error
+    return res.json("Item has been added to the Menu."); // Success response
   });
 });
 
-// Deleting data from DB
+//---------------------------------
+//       DELETE MENU ITEM
+//---------------------------------
 app.delete("/api/menu/:id", (req, res) => {
-  const menuId = req.params.id;
-  const q = "DELETE FROM menu WHERE id = ?";
+  const menuId = req.params.id; // Get the menu ID from URL parameters
+  const query = "DELETE FROM menu WHERE id = ?"; // SQL query to delete a menu item
 
-  connection.query(q, [menuId], (err) => {
+  connection.query(query, [menuId], (err) => {
     if (err) {
-      console.error("Error during DELETE operation:", err);
-      return res.status(500).json(err);
+      console.error("Error during DELETE operation:", err); // Log error
+      return res.status(500).json(err); // Handle error
     }
-    return res.json("Item has been deleted.");
+    return res.json("Item has been deleted."); // Success response
   });
 });
 
-// Edit data from DB
+//---------------------------------
+//       EDIT MENU ITEM
+//---------------------------------
 app.put("/api/menu/:id", (req, res) => {
-  const menuId = req.params.id;
-  const q = "UPDATE menu SET name = ?, ingredients = ?, allergens = ? WHERE id = ?";
-  
-  const values = [req.body.name, req.body.ingredients, req.body.allergens];
-  
-  connection.query(q, [...values, menuId], (err) => {
+  const menuId = req.params.id; // Get the menu ID from URL parameters
+  const query = "UPDATE menu SET name = ?, ingredients = ?, allergens = ? WHERE id = ?"; // SQL query to update a menu item
+  const values = [req.body.name, req.body.ingredients, req.body.allergens]; // New values from request body
+
+  connection.query(query, [...values, menuId], (err) => {
     if (err) {
-      console.error("Error during EDIT operation:", err);
-      return res.status(500).json(err);
+      console.error("Error during EDIT operation:", err); // Log error
+      return res.status(500).json(err); // Handle error
     }
-    return res.json("Item has been edited.");
+    return res.json("Item has been edited."); // Success response
   });
 });
 
-// Get a single menu item by ID
+//---------------------------------
+//       GET SINGLE MENU ITEM
+//---------------------------------
 app.get("/api/menu/:id", (req, res) => {
-  const menuId = req.params.id;
-  const q = "SELECT * FROM menu WHERE id = ?";
+  const menuId = req.params.id; // Get the menu ID from URL parameters
+  const query = "SELECT * FROM menu WHERE id = ?"; // SQL query to fetch a menu item by ID
 
-  connection.query(q, [menuId], (err, data) => {
-    if (err) return res.json(err);
-    return data.length ? res.json(data[0]) : res.status(404).json("Menu item not found."); // Return the first item or 404
+  connection.query(query, [menuId], (err, data) => {
+    if (err) return res.json(err); // Handle error
+    return data.length
+      ? res.json(data[0]) // Return the first item if found
+      : res.status(404).json("Menu item not found."); // 404 response if not found
   });
 });
 
-// POST endpoint for filtering the menu based on allergens
+//---------------------------------
+//       PAGE 1 ROUTES
+//---------------------------------
+
+// Getting Data from DB for Page 1
+app.get("/api/page1/", (req, res) => {
+  const query = "SELECT * FROM page1"; // SQL query to fetch all page1 items
+  connection.query(query, (err, data) => {
+    if (err) return res.json(err); // Handle error
+    return res.json(data); // Send data as JSON response
+  });
+});
+
+// Adding Data to DB for Page 1
+app.post("/api/page1add", (req, res) => {
+  const query = "INSERT INTO page1 (`logo`, `paragraph1`, `paragraph2`) VALUES (?)"; // SQL query to insert a new page1 item
+  const values = [req.body.logo, req.body.paragraph1, req.body.paragraph2]; // Values from request body
+
+  connection.query(query, [values], (err) => {
+    if (err) return res.status(500).json(err); // Handle error
+    return res.json("Item has been added."); // Success response
+  });
+});
+
+// Deleting data from Page 1
+app.delete("/api/page1/:id", (req, res) => {
+  const page1Id = req.params.id; // Get the page1 ID from URL parameters
+  const query = "DELETE FROM page1 WHERE id = ?"; // SQL query to delete a page1 item
+
+  connection.query(query, [page1Id], (err) => {
+    if (err) {
+      console.error("Error during DELETE operation:", err); // Log error
+      return res.status(500).json(err); // Handle error
+    }
+    return res.json("Item has been deleted."); // Success response
+  });
+});
+
+// Edit data from Page 1
+app.put("/api/page1/:id", (req, res) => {
+  const page1Id = req.params.id; // Get the page1 ID from URL parameters
+  const query = "UPDATE page1 SET logo = ?, paragraph1 = ?, paragraph2 = ? WHERE id = ?"; // SQL query to update a page1 item
+  const values = [req.body.logo, req.body.paragraph1, req.body.paragraph2]; // New values from request body
+
+  connection.query(query, [...values, page1Id], (err) => {
+    if (err) {
+      console.error("Error during EDIT operation:", err); // Log error
+      return res.status(500).json(err); // Handle error
+    }
+    return res.json("Item has been edited."); // Success response
+  });
+});
+
+// Get a single page1 item by ID
+app.get("/api/page1/:id", (req, res) => {
+  const page1Id = req.params.id; // Get the page1 ID from URL parameters
+  const query = "SELECT * FROM page1 WHERE id = ?"; // SQL query to fetch a page1 item by ID
+
+  connection.query(query, [page1Id], (err, data) => {
+    if (err) return res.json(err); // Handle error
+    return data.length
+      ? res.json(data[0]) // Return the first item if found
+      : res.status(404).json("Page1 item not found."); // 404 response if not found
+  });
+});
+
+//---------------------------------
+//       FILTER MENU BASED ON ALLERGENS
+//---------------------------------
 app.post("/filterMenu", (req, res) => {
-  console.log("Request received with allergens:", req.body.allergens);
-  const { allergens } = req.body;
+  console.log("Request received with allergens:", req.body.allergens); // Log received allergens
+  const { allergens } = req.body; // Destructure allergens from request body
+
+  // Define allergen keywords
   const allergenKeywords = {
-    Treenut: ["walnut", "almond", "cashew", "pecan", "pistachio", "macadamia", "hazelnut", "almonds", "Beechnut", "Brazil nuts", "Butternut", "Cashews", "Chestnuts", "Chinquapin"],
-    Soy: ["soybean", "tofu", "tempeh", "miso", "soy", "edamame", "natto", "soy albumin", "soy fiber"],
+    Treenut: ["walnut", "almond", "cashew", "pecan", "pistachio", "macadamia", "hazelnut"],
+    Soy: ["soybean", "tofu", "tempeh", "miso"],
     Sesame: ["sesame", "tahini"],
-    Peanut: ["peanut", "peanuts"],
+    Peanut: ["peanut"],
     Wheat: ["wheat", "gluten"],
     Garlic: ["garlic"],
     Avocado: ["avocado"],
-    Banana: ["banana", "bananas"],
-    Mushrooms: ["mushroom", "mushrooms"],
+    Banana: ["banana"],
+    Mushrooms: ["mushroom"],
   };
 
-  const allergensSet = new Set(allergens);
+  const allergensSet = new Set(allergens); // Convert allergens to a Set for easier lookup
   const keywordsToExclude = Object.entries(allergenKeywords)
-    .filter(([key]) => allergensSet.has(key))
-    .flatMap(([, keywords]) => keywords);
+    .filter(([key]) => allergensSet.has(key)) // Get keywords for allergens that are set
+    .flatMap(([, keywords]) => keywords); // Flatten the array of keywords
 
   // Fetch menu items from the database
   connection.query("SELECT * FROM menu", (error, results) => {
     if (error) {
-      return res.status(500).json({ error: "Database query failed" });
+      return res.status(500).json({ error: "Database query failed" }); // Handle error
     }
 
     const filteredItems = results.filter(
-      (item) => !keywordsToExclude.some((keyword) =>
-        item.ingredients.toLowerCase().includes(keyword.toLowerCase())
-      )
-    );
+      (item) =>
+        !keywordsToExclude.some((keyword) =>
+          item.ingredients.toLowerCase().includes(keyword.toLowerCase())
+        )
+    ); // Filter out items containing allergens
 
-    res.json(filteredItems);
+    res.json(filteredItems); // Send filtered items as JSON response
   });
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000;
+//==============================
+//          PAGE TWO ROUTES
+//==============================
+
+//---------------------------------
+//       GET PAGE 2 DATA
+//---------------------------------
+app.get("/api/page2/", (req, res) => {
+  const query = "SELECT * FROM page2"; // SQL query to fetch all page2 items
+  connection.query(query, (err, data) => {
+    if (err) return res.json(err); // Handle error
+    return res.json(data); // Send data as JSON response
+  });
+});
+
+//---------------------------------
+//       ADD PAGE 2 ITEM
+//---------------------------------
+app.post("/api/page2add", (req, res) => {
+  const query = "INSERT INTO page2 (`logo`, `paragraph1`, `paragraph2`) VALUES (?)"; // SQL query to insert a new page2 item
+  const values = [req.body.logo, req.body.paragraph1, req.body.paragraph2]; // Values from request body
+
+  connection.query(query, [values], (err) => {
+    if (err) return res.status(500).json(err); // Handle error
+    return res.json("Item has been added."); // Success response
+  });
+});
+
+//---------------------------------
+//       DELETE PAGE 2 ITEM
+//---------------------------------
+app.delete("/api/page2/:id", (req, res) => {
+  const page2Id = req.params.id; // Get the page2 ID from URL parameters
+  const query = "DELETE FROM page2 WHERE id = ?"; // SQL query to delete a page2 item
+
+  connection.query(query, [page2Id], (err) => {
+    if (err) {
+      console.error("Error during DELETE operation:", err); // Log error
+      return res.status(500).json(err); // Handle error
+    }
+    return res.json("Item has been deleted."); // Success response
+  });
+});
+
+//---------------------------------
+//       EDIT PAGE 2 ITEM
+//---------------------------------
+app.put("/api/page2/:id", (req, res) => {
+  const page2Id = req.params.id; // Get the page2 ID from URL parameters
+  const query = "UPDATE page2 SET logo = ?, paragraph1 = ?, paragraph2 = ? WHERE id = ?"; // SQL query to update a page2 item
+  const values = [req.body.logo, req.body.paragraph1, req.body.paragraph2]; // New values from request body
+
+  connection.query(query, [...values, page2Id], (err) => {
+    if (err) {
+      console.error("Error during EDIT operation:", err); // Log error
+      return res.status(500).json(err); // Handle error
+    }
+    return res.json("Item has been edited."); // Success response
+  });
+});
+
+//---------------------------------
+//       GET SINGLE PAGE 2 ITEM
+//---------------------------------
+app.get("/api/page2/:id", (req, res) => {
+  const page2Id = req.params.id; // Get the page2 ID from URL parameters
+  const query = "SELECT * FROM page2 WHERE id = ?"; // SQL query to fetch a page2 item by ID
+
+  connection.query(query, [page2Id], (err, data) => {
+    if (err) return res.json(err); // Handle error
+    return data.length
+      ? res.json(data[0]) // Return the first item if found
+      : res.status(404).json("Page2 item not found."); // 404 response if not found
+  });
+});
+
+//==============================
+//          SERVER SETUP
+//==============================
+const PORT = process.env.PORT || 5000; // Define the port
 app.listen(PORT, () => {
-  console.log(`Connected to backend! On server: ${PORT}`);
+  console.log(`Connected to backend! On server: ${PORT}`); // Log server start
 });
