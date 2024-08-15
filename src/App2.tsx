@@ -7,26 +7,59 @@ import {
   GridItem,
   Stack,
 } from "@chakra-ui/react";
-import "./App.css";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Previous from "./components/Previous";
+import "./App.css";
 
 const App2 = () => {
-  const location = useLocation(); //we get the data that was passed to App2 location
-  const { selectedAllergens } = location.state; //this line is destructuring selectedallrgens from location.state
-  const [filteredMenu, setFilteredMenu] = useState([]);
+  // Interface for App item
+  interface App2Item {
+    id: number;
+    logo: string;
+    paragraph1: string;
+    paragraph2: string;
+  }
 
+  // Interface for Allergens
+  interface App2Allergens {
+    name: string;
+    index: number;
+    length: number;
+  }
+
+  const location = useLocation(); // Get the data passed to App2
+  const { selectedAllergens } = location.state; // Destructure selectedAllergens from location.state
+  const [filteredMenu, setFilteredMenu] = useState<App2Allergens[]>([]);
+  const [app2, setApp2] = useState<App2Item[]>([]);
+
+  // Fetch data from the database for the layout
+  useEffect(() => {
+    const fetchAllApp2 = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/app2/");
+        setApp2(res.data);
+      } catch (err) {
+        console.error("Error during GET request:", err);
+      }
+    };
+    fetchAllApp2();
+  }, []);
+
+  // Fetch filtered menu based on selected allergens
   useEffect(() => {
     const fetchFilteredMenu = async () => {
       try {
-        const request = await axios.post("http://localhost:5000/filterMenu", {
+        const response = await axios.post("http://localhost:5000/filterMenu", {
           allergens: selectedAllergens,
         });
-        setFilteredMenu(request.data);
+        setFilteredMenu(response.data);
       } catch (err) {
-        console.log("I couldn't get the filtered menu, the problem is with the backend server:", err);
+        console.error(
+          "Couldn't get the filtered menu. Problem with backend server:",
+          err
+        );
       }
     };
     fetchFilteredMenu();
@@ -38,16 +71,17 @@ const App2 = () => {
   };
 
   return (
-    <>
-      <Grid templateAreas={`"header" "main" "footer"`}>
-        <GridItem area={"header"}>
+    <Grid templateAreas={`"header" "main" "footer"`}>
+      {/* Header */}
+      {app2.map((item) => (
+        <GridItem area={"header"} key={item.id}>
           <Box
             marginTop={15}
             display="flex"
             alignItems="center"
             justifyContent="center"
           >
-            <Image boxSize="80px" src="src/assets/BlackLogo.jpg" alt="Logo" />
+            <Image boxSize="80px" src={item.logo} alt="Logo" />
           </Box>
           <Text
             margin={20}
@@ -55,56 +89,59 @@ const App2 = () => {
             alignItems="center"
             justifyContent="center"
           >
-            <b>
-              BASED ON YOUR ALLERGEN PREFERENCES, HERE ARE OUR PERSONALIZED
-              RECOMMENDATIONS:
-            </b>
+            <b>{item.paragraph1}</b>
           </Text>
         </GridItem>
-        <GridItem area={"main"}>
-          <SimpleGrid columns={1} spacingX="40px" spacingY="20px">
-            {filteredMenu.length > 0 ? (
-              filteredMenu.map((item, index) => (
-                <Box
-                  key={index}
-                  height={{ base: "60px", md: "80px" }}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
+      ))}
+
+      {/* Main Content */}
+      <GridItem area={"main"}>
+        <SimpleGrid columns={1} spacingX="40px" spacingY="20px">
+          {filteredMenu.length > 0 ? (
+            filteredMenu.map((item, index) => (
+              <Box
+                key={index}
+                height={{ base: "60px", md: "80px" }}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Text
+                  m={{ base: 2, md: 4 }}
+                  fontSize={{ base: "md", md: "xl" }}
                 >
-                  <Text
-                    m={{ base: 2, md: 4 }}
-                    fontSize={{ base: "md", md: "xl" }}
-                  >
-                    <Text>{capitalizeWords(item.name)}</Text>
-                  </Text>
-                </Box>
-              ))
-            ) : (
-              <Text>No items available for your selection.</Text>
-            )}
-          </SimpleGrid>
-          <Box
-            height="80px"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Stack direction="row" align="center">
-              <Link to="/">
-                <Previous></Previous>
-              </Link>
-            </Stack>
-          </Box>
-        </GridItem>
-        <GridItem area={"footer"}>
+                  {capitalizeWords(item.name)}
+                </Text>
+              </Box>
+            ))
+          ) : (
+            <Text>No items available for your selection.</Text>
+          )}
+        </SimpleGrid>
+
+        <Box
+          height="80px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Stack direction="row" align="center">
+            <Link to="/">
+              <Previous />
+            </Link>
+          </Stack>
+        </Box>
+      </GridItem>
+
+      {/* Footer */}
+      {app2.map((item) => (
+        <GridItem area={"footer"} key={item.id}>
           <Text margin={20}>
-            <b>Allergen Disclaimer: </b>Our food may come into contact with
-            peanuts, tree nuts, soy, gluten, and sesame seeds.
+            <b>{item.paragraph2}</b>
           </Text>
         </GridItem>
-      </Grid>
-    </>
+      ))}
+    </Grid>
   );
 };
 

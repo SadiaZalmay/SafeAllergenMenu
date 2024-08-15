@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   SimpleGrid,
@@ -10,7 +10,9 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Submit from "./components/Submit";
+import axios from "axios";
 
+// List of allergens to display as checkboxes
 const allergensList = [
   "Wheat",
   "Sesame",
@@ -24,12 +26,33 @@ const allergensList = [
 ];
 
 function App() {
+  // Interface for App item
+  interface AppItem {
+    id: number;
+    logo: string;
+    paragraph1: string;
+    paragraph2: string;
+  }
+
+  // State to manage selected allergens & layout
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
+  const [app, setApp] = useState<AppItem[]>([]);
   const navigate = useNavigate();
 
-  //for my own understanding, this function adding the checked allergens
-  //into the list of allergens if they r checked, but if they are already checked
-  //and we get another click on the checkbox then it removes that allergen from the list.
+  // Fetch data from the database for the layout
+  useEffect(() => {
+    const fetchAllApp = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/app/");
+        setApp(res.data);
+      } catch (err) {
+        console.error("Error during GET request:", err);
+      }
+    };
+    fetchAllApp();
+  }, []);
+
+  // Handle checkbox change to add/remove allergens from the selected list
   const handleCheckboxChange = (allergen: string) => {
     setSelectedAllergens((prev) =>
       prev.includes(allergen)
@@ -37,78 +60,82 @@ function App() {
         : [...prev, allergen]
     );
   };
-  //after hitting submit, the selectedAllergens list
-  //is sent to the URL of next page App2
+
+  // Navigate to App2 with selected allergens on submit
   const handleSubmit = () => {
     navigate("/App2", { state: { selectedAllergens } });
   };
 
-  return (
-    <>
-      <Grid templateAreas={`"header" "main" "footer"`}>
-        <GridItem area={"header"}>
-          <Box
-            marginTop={15}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Image boxSize="80px" src="src/assets/BlackLogo.jpg" alt="Logo" />
-          </Box>
-          <Text
-            margin={20}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <b>
-              NOTE: WE DO NOT LIST DAIRY OR SHELLFISH AS AN ALLERGY SINCE WE
-              DON'T UTILIZE THOSE INGREDIENTS IN OUR FOOD:
-            </b>
-          </Text>
-        </GridItem>
-        <GridItem area={"main"}>
-          <SimpleGrid columns={2} spacingX="40px" spacingY="20px">
-            {allergensList.map((allergen) => (
-              <Box
-                key={allergen}
-                height="80px"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <label className="custom-checkbox">
-                  <input
-                    type="checkbox"
-                    onChange={() => handleCheckboxChange(allergen)}
-                  />
-                  <span className="checkbox-indicator"></span>
-                </label>
-                <Text margin={10}>
-                  <b>{allergen}</b>
-                </Text>
-              </Box>
-            ))}
-          </SimpleGrid>
-          <Box
-            height="80px"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Stack direction="row" align="center">
-              <Submit onClick={handleSubmit}>Submit</Submit>
-            </Stack>
-          </Box>
-        </GridItem>
-        <GridItem area={"footer"}>
-          <Text margin={20}>
-            <b>Allergen Disclaimer: </b>Our food may come into contact with
-            peanuts, tree nuts, soy, gluten, and sesame seeds.
-          </Text>
-        </GridItem>
-      </Grid>
-    </>
+  return (      
+        <Grid templateAreas={`"header" "main" "footer"`} >
+          {/* Header */}
+          {app.map((item) => (
+          <GridItem area={"header"} key={item.id}>
+            <Box
+              marginTop={15}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Image boxSize="80px" src={item.logo} alt="Logo" />
+            </Box>
+            <Text
+              margin={20}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <b>{item.paragraph1}</b>
+            </Text>
+          </GridItem>
+        ))}
+
+          {/* Main Content */}
+          <GridItem area={"main"}>
+            <SimpleGrid columns={2} spacingX="40px" spacingY="20px">
+              {allergensList.map((allergen) => (
+                <Box
+                  key={allergen}
+                  height="80px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <label className="custom-checkbox">
+                    <input
+                      type="checkbox"
+                      onChange={() => handleCheckboxChange(allergen)}
+                    />
+                    <span className="checkbox-indicator"></span>
+                  </label>
+                  <Text margin={10}>
+                    <b>{allergen}</b>
+                  </Text>
+                </Box>
+              ))}
+            </SimpleGrid>
+            <Box
+              height="80px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Stack direction="row" align="center">
+                <Submit onClick={handleSubmit}>Submit</Submit>
+              </Stack>
+            </Box>
+          </GridItem>
+
+          {/* Footer */}
+          {app.map((item) => (
+          <GridItem area={"footer"} key={item.id}>
+            <Text margin={20}>
+              <b>{item.paragraph2}</b>
+            </Text>
+          </GridItem>
+          ))}
+        </Grid>
+      
   );
 }
 

@@ -14,19 +14,21 @@ const app = express(); // Create an Express application
 const connection = mysql.createConnection({
   host: "127.0.0.1",
   user: "root",
-  password: "", 
-  database: "allergen", 
+  password: "",
+  database: "allergen",
   port: 3306,
 });
 
 //==============================
 //         MIDDLEWARE
 //==============================
-app.use(cors({
-  origin: "http://localhost:3000", // Only this URL is allowed to access the backend
-  methods: ["GET", "POST", "DELETE", "PUT"], // Allowed HTTP methods
-  credentials: true, // Allowing cookies to be sent with the data from the server
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Only this URL is allowed to access the backend
+    methods: ["GET", "POST", "DELETE", "PUT"], // Allowed HTTP methods
+    credentials: true, // Allowing cookies to be sent with the data from the server
+  })
+);
 
 app.use(express.json()); // Parse JSON bodies
 
@@ -49,7 +51,8 @@ app.get("/api/menu/", (req, res) => {
 //       ADD MENU ITEM
 //---------------------------------
 app.post("/api/menuadd", (req, res) => {
-  const query = "INSERT INTO menu (`name`, `ingredients`, `allergens`) VALUES (?)"; // SQL query to insert a new menu item
+  const query =
+    "INSERT INTO menu (`name`, `ingredients`, `allergens`) VALUES (?)"; // SQL query to insert a new menu item
   const values = [req.body.name, req.body.ingredients, req.body.allergens]; // Values from request body
 
   connection.query(query, [values], (err) => {
@@ -79,7 +82,8 @@ app.delete("/api/menu/:id", (req, res) => {
 //---------------------------------
 app.put("/api/menu/:id", (req, res) => {
   const menuId = req.params.id; // Get the menu ID from URL parameters
-  const query = "UPDATE menu SET name = ?, ingredients = ?, allergens = ? WHERE id = ?"; // SQL query to update a menu item
+  const query =
+    "UPDATE menu SET name = ?, ingredients = ?, allergens = ? WHERE id = ?"; // SQL query to update a menu item
   const values = [req.body.name, req.body.ingredients, req.body.allergens]; // New values from request body
 
   connection.query(query, [...values, menuId], (err) => {
@@ -121,7 +125,8 @@ app.get("/api/page1/", (req, res) => {
 
 // Adding Data to DB for Page 1
 app.post("/api/page1add", (req, res) => {
-  const query = "INSERT INTO page1 (`logo`, `paragraph1`, `paragraph2`) VALUES (?)"; // SQL query to insert a new page1 item
+  const query =
+    "INSERT INTO page1 (`logo`, `paragraph1`, `paragraph2`) VALUES (?)"; // SQL query to insert a new page1 item
   const values = [req.body.logo, req.body.paragraph1, req.body.paragraph2]; // Values from request body
 
   connection.query(query, [values], (err) => {
@@ -147,7 +152,8 @@ app.delete("/api/page1/:id", (req, res) => {
 // Edit data from Page 1
 app.put("/api/page1/:id", (req, res) => {
   const page1Id = req.params.id; // Get the page1 ID from URL parameters
-  const query = "UPDATE page1 SET logo = ?, paragraph1 = ?, paragraph2 = ? WHERE id = ?"; // SQL query to update a page1 item
+  const query =
+    "UPDATE page1 SET logo = ?, paragraph1 = ?, paragraph2 = ? WHERE id = ?"; // SQL query to update a page1 item
   const values = [req.body.logo, req.body.paragraph1, req.body.paragraph2]; // New values from request body
 
   connection.query(query, [...values, page1Id], (err) => {
@@ -173,15 +179,45 @@ app.get("/api/page1/:id", (req, res) => {
 });
 
 //---------------------------------
-//       FILTER MENU BASED ON ALLERGENS
+//       GET APP DATA
 //---------------------------------
+app.get("/api/app/", (req, res) => {
+  const query = "SELECT * FROM page1"; // SQL query to fetch all page1 items
+  connection.query(query, (err, data) => {
+    if (err) return res.json(err); // Handle error
+    return res.json(data); // Send data as JSON response
+  });
+});
+
+//---------------------------------
+//       GET APP2 DATA
+//---------------------------------
+app.get("/api/app2/", (req, res) => {
+  const query = "SELECT * FROM page2"; // SQL query to fetch all page2 items
+  connection.query(query, (err, data) => {
+    if (err) return res.json(err); // Handle error
+    return res.json(data); // Send data as JSON response
+  });
+});
+
+//---------------------------------------
+//       FILTER MENU BASED ON ALLERGENS
+//---------------------------------------
 app.post("/filterMenu", (req, res) => {
   console.log("Request received with allergens:", req.body.allergens); // Log received allergens
   const { allergens } = req.body; // Destructure allergens from request body
 
   // Define allergen keywords
   const allergenKeywords = {
-    Treenut: ["walnut", "almond", "cashew", "pecan", "pistachio", "macadamia", "hazelnut"],
+    Treenut: [
+      "walnut",
+      "almond",
+      "cashew",
+      "pecan",
+      "pistachio",
+      "macadamia",
+      "hazelnut",
+    ],
     Soy: ["soybean", "tofu", "tempeh", "miso"],
     Sesame: ["sesame", "tahini"],
     Peanut: ["peanut"],
@@ -233,7 +269,8 @@ app.get("/api/page2/", (req, res) => {
 //       ADD PAGE 2 ITEM
 //---------------------------------
 app.post("/api/page2add", (req, res) => {
-  const query = "INSERT INTO page2 (`logo`, `paragraph1`, `paragraph2`) VALUES (?)"; // SQL query to insert a new page2 item
+  const query =
+    "INSERT INTO page2 (`logo`, `paragraph1`, `paragraph2`) VALUES (?)"; // SQL query to insert a new page2 item
   const values = [req.body.logo, req.body.paragraph1, req.body.paragraph2]; // Values from request body
 
   connection.query(query, [values], (err) => {
@@ -263,7 +300,8 @@ app.delete("/api/page2/:id", (req, res) => {
 //---------------------------------
 app.put("/api/page2/:id", (req, res) => {
   const page2Id = req.params.id; // Get the page2 ID from URL parameters
-  const query = "UPDATE page2 SET logo = ?, paragraph1 = ?, paragraph2 = ? WHERE id = ?"; // SQL query to update a page2 item
+  const query =
+    "UPDATE page2 SET logo = ?, paragraph1 = ?, paragraph2 = ? WHERE id = ?"; // SQL query to update a page2 item
   const values = [req.body.logo, req.body.paragraph1, req.body.paragraph2]; // New values from request body
 
   connection.query(query, [...values, page2Id], (err) => {
