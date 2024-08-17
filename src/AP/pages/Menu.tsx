@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import "../assets/css/light-bootstrap-dashboard.css";
 import { Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { Dropdown } from "react-bootstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-//adding to the DB
 const Menu: React.FC = () => {
   interface MenuItem {
     id: number;
@@ -13,48 +14,38 @@ const Menu: React.FC = () => {
     ingredients: string;
     allergens: string;
   }
-  
+
   const [menu, setMenu] = useState<MenuItem[]>([]);
+
   useEffect(() => {
     const fetchAllMenu = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/menu/");
         setMenu(res.data);
       } catch (err) {
-        console.error("Error during POST request:", err);
+        console.error("Error during GET request:", err);
       }
     };
     fetchAllMenu();
   }, []);
-  
 
-  //deleting from the DB
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`http://localhost:5000/api/menu/${id}`);
-      // Fetch the updated menu list after deletion
       const res = await axios.get("http://localhost:5000/api/menu/");
-      setMenu(res.data); // Update the menu state with the new data
+      setMenu(res.data);
     } catch (err) {
       console.error("Error during DELETE request:", err);
     }
   };
 
-  // Function to capitalize each word
   const capitalizeWords = (str: string) => {
     return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
   return (
     <div className="wrapper">
-      <div
-        className="sidebar"
-        // style={{
-        //   backgroundImage: `url(${backgroundImage})`,
-        //   backgroundSize: 'cover', // Optional: Adjusts how the background image is displayed
-        //   backgroundPosition: 'center', // Optional: Centers the background image
-        // }}
-      >
+      <div className="sidebar">
         <div className="sidebar-wrapper">
           <div className="logo">
             <a className="simple-text">Electric Beets Allergen</a>
@@ -107,34 +98,24 @@ const Menu: React.FC = () => {
                 </li>
               </ul>
               <ul className="navbar-nav ml-auto">
-                <li className="nav-item dropdown">
-                  <a
+                <Dropdown className="nav-item dropdown">
+                  <Dropdown.Toggle
+                    variant="text"
                     className="nav-link dropdown-toggle"
-                    id="navbarDropdownMenuLink"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
                   >
-                    <span className="no-icon">Account</span>
-                  </a>
-                  <div
-                    className="dropdown-menu"
-                    aria-labelledby="navbarDropdownMenuLink"
-                  >
-                    <a className="dropdown-item" href="/ChangePassword">
+                    Account
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu className="custom-dropdown-menu">
+                    <Dropdown.Item as={Link} to="/ChangePassword">
                       Change Password
-                    </a>
-                    <div className="divider"></div>
-                    <a
-                      className="dropdown-item"
-                      href="#"
-                      data-toggle="modal"
-                      data-target="#logoutModal"
-                    >
-                      Log out
-                    </a>
-                  </div>
-                </li>
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item as={Link} to="/Logout">
+                      Logout
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </ul>
             </div>
           </div>

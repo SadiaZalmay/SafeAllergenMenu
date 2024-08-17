@@ -19,13 +19,6 @@ const MenuAdd: React.FC = () => {
 
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    // Check if any of the fields are empty
-    // if (menu.name || menu.ingredients) {
-    //   alert("Please fill in all fields.");
-    //   return;
-    // }
-
     try {
       await axios.post("http://localhost:5000/api/menuadd", menu);
       navigate("/AP"); // Go to home page

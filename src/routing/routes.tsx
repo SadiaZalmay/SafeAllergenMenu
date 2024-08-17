@@ -12,8 +12,9 @@ import Page1Edit from "../AP/pages/Page1Edit";
 import Page2 from "../AP/pages/Page2";
 import Page2Add from "../AP/pages/Page2Add";
 import Page2Edit from "../AP/pages/Page2Edit";
+import Login from "../AP/pages/Login";
+import Register from "../AP/pages/Register";
 import ChangePassword from "../AP/pages/ChangePassword";
-// import Logout from "../AP/pages/Logout";
 
 // Create a browser router for the application routes
 const router = createBrowserRouter([
@@ -62,10 +63,14 @@ const router = createBrowserRouter([
     path: "/Page2Edit/:id",
     element: <Page2Edit />, // Edit filtered safe menu item by ID
   },
-  // {
-  //   path: "/Logout",
-  //   element: <Logout />, // Logout page
-  // },
+  {
+    path: "/Login",
+    element: <Login />, // Login page
+  },
+  {
+    path: "/Register",
+    element: <Register />, // Register page
+  },
   {
     path: "/ChangePassword",
     element: <ChangePassword />, // Change user password page

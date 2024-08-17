@@ -10,6 +10,10 @@ input[type="file"]>input[type="button"]::-moz-focus-inner {
     outline: 0;
 }
 
+.dropdown-toggle::after {
+    display: none; /* Hides the arrow */
+  }
+  
 .table td, .table th {
     padding: 15px;
 }

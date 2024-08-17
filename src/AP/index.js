@@ -4,19 +4,53 @@
 import cors from "cors"; // Allows using the server
 import express from "express"; // Library: makes it easy to handle requests & responses
 import mysql from "mysql2"; // Helps with connecting to the database
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import cookieParser from "cookie-parser";
+
+const salt = 10;
 
 //==============================
 //      INITIALIZATION
 //==============================
 const app = express(); // Create an Express application
 
-// MySQL connection setup
+app.use(express.json());
+app.use(cors());
+app.use(cookieParser());
+
+//==============================
+//      CONNECTION
+//==============================
 const connection = mysql.createConnection({
   host: "127.0.0.1",
   user: "root",
   password: "",
   database: "allergen",
   port: 3306,
+});
+
+//==============================
+//          SERVER SETUP
+//==============================
+const PORT = process.env.PORT || 5000; // Define the port
+app.listen(PORT, () => {
+  console.log(`Connected to backend! On server: ${PORT}`); // Log server start
+});
+
+//==============================
+//            REGISTER
+//==============================
+app.post("/api/register", (req, res) => {
+  const sql = "INSERT INTO login (`username`, `email`, `password`) VALUES (?)";
+  bcrypt.hash(req.body.password.toString(), salt, (err, hash) => {
+    if (err) return res.status(500).json({ error: "Error hashing password" });
+    const values = [req.body.username, req.body.email, hash];
+    connection.query(sql, [values], (err, result) => {
+      if (err) return res.status(500).json({ error: "Error inserting data into server" });
+      return res.json({ status: "Success" });
+    });
+  });
 });
 
 //==============================
@@ -326,12 +360,4 @@ app.get("/api/page2/:id", (req, res) => {
       ? res.json(data[0]) // Return the first item if found
       : res.status(404).json("Page2 item not found."); // 404 response if not found
   });
-});
-
-//==============================
-//          SERVER SETUP
-//==============================
-const PORT = process.env.PORT || 5000; // Define the port
-app.listen(PORT, () => {
-  console.log(`Connected to backend! On server: ${PORT}`); // Log server start
 });
