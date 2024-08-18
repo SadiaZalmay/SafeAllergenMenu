@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../assets/css/light-bootstrap-dashboard.css";
-import { Button } from "react-bootstrap";
+import { Button, Dropdown } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -107,34 +107,24 @@ const Page1: React.FC = () => {
                 </li>
               </ul>
               <ul className="navbar-nav ml-auto">
-                <li className="nav-item dropdown">
-                  <a
+                <Dropdown className="nav-item dropdown">
+                  <Dropdown.Toggle
+                    variant="text"
                     className="nav-link dropdown-toggle"
-                    id="navbarDropdownMenuLink"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
                   >
-                    <span className="no-icon">Account</span>
-                  </a>
-                  <div
-                    className="dropdown-menu"
-                    aria-labelledby="navbarDropdownMenuLink"
-                  >
-                    <a className="dropdown-item" href="/ChangePassword">
+                    Account
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu className="custom-dropdown-menu">
+                    <Dropdown.Item as={Link} to="/ChangePassword">
                       Change Password
-                    </a>
-                    <div className="divider"></div>
-                    <a
-                      className="dropdown-item"
-                      href="#"
-                      data-toggle="modal"
-                      data-target="#logoutModal"
-                    >
-                      Log out
-                    </a>
-                  </div>
-                </li>
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item as={Link} to="/Login">
+                      Logout
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </ul>
             </div>
           </div>

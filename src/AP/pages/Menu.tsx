@@ -6,6 +6,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { Dropdown } from "react-bootstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
+//import myImage from "../assets/img/s.png"; // Adjust path based on your file structure
 
 const Menu: React.FC = () => {
   interface MenuItem {
@@ -111,7 +112,7 @@ const Menu: React.FC = () => {
                       Change Password
                     </Dropdown.Item>
                     <Dropdown.Divider />
-                    <Dropdown.Item as={Link} to="/Logout">
+                    <Dropdown.Item as={Link} to="/Login">
                       Logout
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -120,149 +121,108 @@ const Menu: React.FC = () => {
             </div>
           </div>
         </nav>
-
-        {/* Logout Modal */}
-        <div
-          className="modal fade"
-          id="logoutModal"
-          tabIndex={-1}
-          role="dialog"
-          aria-labelledby="logoutModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="logoutModalLabel">
-                  Ready to Leave?
-                </h5>
-                <button
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                Select "Logout" below if you are ready to end your current
-                session.
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-dismiss="modal"
-                >
-                  Cancel
-                </button>
-                <a href="/Logout" className="btn btn-primary">
-                  Logout
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="content">
           <div className="container-fluid">
             <div className="row">
               <div className="col-md-12">
-                <div className="card card-tasks">
+                <div
+                  style={{
+                    //backgroundImage: `url(${myImage})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundColor: "rgb(94, 2, 49)"
+                  }}
+                >
                   <div className="card-header">
-                    <h4 className="card-title">Menu</h4>
+                    <h4 className="card-title" style={{ margin: "20px" }}>
+                      Menu
+                    </h4>
                   </div>
-                </div>
-              </div>
-            </div>
 
-            <div className="container-fluid">
-              <div className="card shadow mb-4">
-                <div className="card-header py-3">
-                  <div className="row">
-                    <div className="col-6">
-                      <div className="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div className="input-group">
-                          <input
-                            type="text"
-                            className="form-control bg-light border-0 small"
-                            placeholder="Search for..."
-                            aria-label="Search"
-                            aria-describedby="basic-addon2"
-                            name="search1"
-                          />
-                          <div className="input-group-append">
-                            <button
-                              className="btn btn-primary"
-                              type="submit"
-                              name="search"
+                  <div className="container-fluid">
+                    <div className="card shadow mb-4">
+                      <div className="card-header py-3">
+                        <div className="row">
+                          <div className="col-6">
+                            <div className="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                              <div className="input-group">
+                                <input
+                                  type="text"
+                                  className="form-control bg-light border-0 small"
+                                  placeholder="Search for..."
+                                  aria-label="Search"
+                                  aria-describedby="basic-addon2"
+                                  name="search1"
+                                />
+                                <div className="input-group-append">
+                                  <button
+                                    className="btn btn-primary"
+                                    type="submit"
+                                    name="search"
+                                  >
+                                    <i className="nc-icon nc-zoom-split"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-6">
+                            <a
+                              href="/MenuAdd"
+                              className="btn btn-primary float-right text-button "
                             >
-                              <i className="nc-icon nc-zoom-split"></i>
-                            </button>
+                              Add Data
+                            </a>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div className="col-6">
-                      <a
-                        href="/MenuAdd"
-                        className="btn btn-primary float-right"
+                  </div>
+
+                  <div className="card-body">
+                    <div className="table-responsive">
+                      <table
+                        className="table table-bordered"
+                        id="dataTable"
+                        width="100%"
+                        cellSpacing={0}
                       >
-                        Add Data
-                      </a>
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Ingredients</th>
+                            <th>Allergen</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {menu.map((item) => (
+                            <tr key={item.id}>
+                              <td>{capitalizeWords(item.name)}</td>
+                              <td>{capitalizeWords(item.ingredients)}</td>
+                              <td>{capitalizeWords(item.allergens)}</td>
+                              <td className="text-center">
+                                <Link to={`/MenuEdit/${item.id}`}>
+                                  <Button variant="info">Edit</Button>
+                                </Link>
+                              </td>
+                              <td className="text-center">
+                                <Button
+                                  type="button"
+                                  onClick={() => handleDelete(item.id)}
+                                  variant="danger"
+                                >
+                                  Delete
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="card-body">
-              <div className="table-responsive">
-                <table
-                  className="table table-bordered"
-                  id="dataTable"
-                  width="100%"
-                  cellSpacing={0}
-                >
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Ingredients</th>
-                      <th>Allergen</th>
-                      <th>Edit</th>
-                      <th>Delete</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {menu.map((item) => (
-                      <tr key={item.id}>
-                        <td>{capitalizeWords(item.name)}</td>
-                        <td>{capitalizeWords(item.ingredients)}</td>
-                        <td>{capitalizeWords(item.allergens)}</td>
-                        <td className="text-center">
-                          <Link to={`/MenuEdit/${item.id}`}>
-                            <Button variant="info" title="Edit Data">
-                              <i className="fa fa-edit"></i> Edit
-                            </Button>
-                          </Link>
-                        </td>
-                        <td className="text-center">
-                          <a href="">
-                            <Button
-                              type="button"
-                              onClick={() => handleDelete(item.id)}
-                              variant="danger"
-                              title="Remove"
-                            >
-                              Delete
-                            </Button>
-                          </a>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
               </div>
             </div>
           </div>

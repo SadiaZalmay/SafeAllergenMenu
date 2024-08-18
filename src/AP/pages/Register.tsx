@@ -4,20 +4,20 @@ import "../assets/css/light-bootstrap-dashboard.css";
 import axios from "axios";
 
 const Register: React.FC = () => {
-  const [login, setLogin] = useState({
+  const [values, setValues] = useState({
     username: "",
     email: "",
     password: "",
   });
   const handleChange = (e: { target: { name: string; value: string } }) => {
-    setLogin((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   const navigate = useNavigate();
 
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/register", login);
+      await axios.post("http://localhost:5000/api/register", values);
       navigate("/Login");
     } catch (err) {
       console.error(err);

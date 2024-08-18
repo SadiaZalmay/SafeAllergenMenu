@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import "../assets/css/light-bootstrap-dashboard.css"; // Custom styles
 import "../assets/css/bootstrap.min.css"; // Custom styles
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Dropdown } from "react-bootstrap";
 
 const MenuAdd: React.FC = () => {
   const [menu, setMenu] = useState({
@@ -35,6 +36,7 @@ const MenuAdd: React.FC = () => {
           backgroundImage: `url('../assets/img/8a3af60e-5fb9-4a9e-817f-a5af303ba85d.avif')`,
         }}
       >
+
         <div className="sidebar-wrapper">
           <div className="logo">
             <a className="simple-text">Electric Beets Allergen</a>
@@ -86,35 +88,25 @@ const MenuAdd: React.FC = () => {
                   </a>
                 </li>
               </ul>
-              <ul className="navbar-nav ml-auto">
-                <li className="nav-item dropdown">
-                  <a
+               <ul className="navbar-nav ml-auto">
+                <Dropdown className="nav-item dropdown">
+                  <Dropdown.Toggle
+                    variant="text"
                     className="nav-link dropdown-toggle"
-                    id="navbarDropdownMenuLink"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
                   >
-                    <span className="no-icon">Account</span>
-                  </a>
-                  <div
-                    className="dropdown-menu"
-                    aria-labelledby="navbarDropdownMenuLink"
-                  >
-                    <a className="dropdown-item" href="/ChangePassword">
+                    Account
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu className="custom-dropdown-menu">
+                    <Dropdown.Item as={Link} to="/ChangePassword">
                       Change Password
-                    </a>
-                    <div className="divider"></div>
-                    <a
-                      className="dropdown-item"
-                      href="#"
-                      data-toggle="modal"
-                      data-target="#logoutModal"
-                    >
-                      Log out
-                    </a>
-                  </div>
-                </li>
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item as={Link} to="/Login">
+                      Logout
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </ul>
             </div>
           </div>

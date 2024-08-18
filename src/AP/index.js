@@ -16,7 +16,13 @@ const salt = 10;
 const app = express(); // Create an Express application
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    methods: ["POST", "GET"],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 //==============================
@@ -47,9 +53,56 @@ app.post("/api/register", (req, res) => {
     if (err) return res.status(500).json({ error: "Error hashing password" });
     const values = [req.body.username, req.body.email, hash];
     connection.query(sql, [values], (err, result) => {
-      if (err) return res.status(500).json({ error: "Error inserting data into server" });
-      return res.json({ status: "Success" });
+      if (err)
+        return res
+          .status(500)
+          .json({ error: "Error inserting data into server" });
+      return res.json({ status: "Signed up successfully!" });
     });
+  });
+});
+//==============================
+//            LOGIN
+//==============================
+app.post("/api/login", (req, res) => {
+  const sql = "SELECT * FROM login WHERE email = ?";
+  connection.query(sql, [req.body.email], (err, data) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ error: "Server error. Please try again later." });
+    }
+
+    if (data.length === 0) {
+      return res
+        .status(401)
+        .json({ error: "Email not found. Please check and try again." });
+    }
+
+    bcrypt.compare(
+      req.body.password.toString(),
+      data[0].password,
+      (err, isMatch) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ error: "Server error. Please try again later." });
+        }
+
+        if (isMatch) {
+          const name = data[0].name;
+          const token = jwt.sign({ name }, "jwt-secret-key", {
+            expiresIn: "1h", // Example: 1 hour
+          });          
+          res.cookie("token", token);
+          return res.status(200).json({ message: "Login successful!" });
+        } else {
+          return res
+            .status(401)
+            .json({ error: "Incorrect password. Please try again." });
+        }
+      }
+    );
   });
 });
 

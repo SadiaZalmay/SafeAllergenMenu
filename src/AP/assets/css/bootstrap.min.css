@@ -8092,6 +8092,30 @@ a.bg-dark:focus, a.bg-dark:hover {
     }
 }
 
+/* Base styles for the text/button */
+.text-button {
+    display: inline-block;
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: 2px solid white;
+    border-radius: 50px; /* Oval shape */
+    color: black;
+    background-color: "rgb(112, 41, 99)" ;
+    text-align: center;
+    font-size: 16px; /* Adjust font size as needed */
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+  }
+  
+  /* Hover styles */
+  .text-button:hover {
+    background-color: burlywood; /*#f5f5dc; /* Creamy color */
+    border-color: black;
+    box-shadow: 4px 4px 10px orange; /* Shadow effect */
+    padding: 10px 20px; /* Maintain padding size on hover */
+  }
+
+  
 .text-justify {
     text-align: justify !important
 }
@@ -8117,6 +8141,12 @@ a.bg-dark:focus, a.bg-dark:hover {
 .text-center {
     text-align: center !important
 }
+.box-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
 
 @media (min-width:576px) {
     .text-sm-left {
