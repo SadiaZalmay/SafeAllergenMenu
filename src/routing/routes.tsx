@@ -15,6 +15,8 @@ import Page2Edit from "../AP/pages/Page2Edit";
 import Login from "../AP/pages/Login";
 import Register from "../AP/pages/Register";
 import ChangePassword from "../AP/pages/ChangePassword";
+import AuthGuard from "../AP/pages/AuthGuard"; 
+
 
 // Create a browser router for the application routes
 const router = createBrowserRouter([
@@ -26,42 +28,78 @@ const router = createBrowserRouter([
     path: "/App2",
     element: <App2 />, // Alternative application route
   },
-  // Admin panel routes
+  // Admin panel routes with AuthGuard
   {
     path: "/AP",
-    element: <Menu />, // Admin panel menu page
+    element: (
+      <AuthGuard>
+        <Menu /> 
+      </AuthGuard>
+    ), // Admin panel menu page
   },
   {
     path: "/MenuEdit/:id",
-    element: <MenuEdit />, // Edit menu item by ID
+    element: (
+      <AuthGuard>
+        <MenuEdit />
+      </AuthGuard>
+    ), // Edit menu item by ID
   },
   {
     path: "/MenuAdd",
-    element: <MenuAdd />, // Add a new menu item
+    element: (
+      <AuthGuard>
+        <MenuAdd />
+      </AuthGuard>
+    ), // Add a new menu item
   },
   {
     path: "/Page1",
-    element: <Page1 />, // Allergen selection page
+    element: (
+      <AuthGuard>
+        <Page1 />
+      </AuthGuard>
+    ), // Allergen selection page
   },
   {
     path: "/Page1Add",
-    element: <Page1Add />, // Add new allergen info
+    element: (
+      <AuthGuard>
+        <Page1Add />
+      </AuthGuard>
+    ), // Add new allergen info
   },
   {
     path: "/Page1Edit/:id",
-    element: <Page1Edit />, // Edit allergen info by ID
+    element: (
+      <AuthGuard>
+        <Page1Edit />
+      </AuthGuard>
+    ), // Edit allergen info by ID
   },
   {
     path: "/Page2",
-    element: <Page2 />, // Filtered safe menu page
+    element: (
+      <AuthGuard>
+        <Page2 />
+      </AuthGuard>
+    ), // Filtered safe menu page
   },
   {
     path: "/Page2Add",
-    element: <Page2Add />, // Add new filtered safe menu item
+    element: (
+      <AuthGuard>
+        <Page2Add />
+      </AuthGuard>
+    ), // Add new filtered safe menu item
   },
   {
     path: "/Page2Edit/:id",
-    element: <Page2Edit />, // Edit filtered safe menu item by ID
+    element: (
+      <AuthGuard>
+        <Page2Edit />
+      </AuthGuard>
+    ), // Edit filtered safe menu item by ID
   },
   {
     path: "/Login",

@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "../assets/css/light-bootstrap-dashboard.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [values, setValues] = useState({
@@ -11,47 +10,56 @@ const Login: React.FC = () => {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!values.username || !values.email || !values.password) {
+      setErrorMessage("All fields are required.");
+      return;
+    }
+
     setErrorMessage(null);
 
     try {
       const response = await axios.post(
         "http://localhost:5000/api/login",
-        values
+        values,
+        { withCredentials: true } // Ensure this matches with server-side cookie setting
       );
+
       if (response.status === 200) {
-        navigate("/AP");
+        setIsAuthenticated(true);
+        navigate("/AP"); // Redirect on successful login
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         const status = err.response.status;
-        const errorMsg = err.response.data.error;
+        const errorMsg =
+          err.response.data.error || "An unexpected error occurred."; // Ensure error field matches server
 
         if (status === 401) {
-          setErrorMessage(errorMsg); // Display error message from the backend
+          setErrorMessage(errorMsg);
         } else {
-          setErrorMessage(
-            "An unexpected error occurred. Please try again later."
-          );
+          setErrorMessage("An unexpected error occurred.");
         }
       } else {
         setErrorMessage("An error occurred. Please try again later.");
       }
-      console.error("Error during login:", err); // Log the error
+      console.error("Error during login:", err);
     }
   };
 
   return (
     <div className="container">
-      {/* Outer Row */}
       <div className="row justify-content-center">
         <div className="col-xl-6 col-lg-6 col-md-8">
           <div className="card o-hidden border-0 shadow-lg my-5">
@@ -64,7 +72,7 @@ const Login: React.FC = () => {
                   {errorMessage}
                 </div>
               )}
-              <form className="user">
+              <form className="user" onSubmit={handleSubmit}>
                 <div className="form-group">
                   <label>Username</label>
                   <input
@@ -98,11 +106,7 @@ const Login: React.FC = () => {
                     required
                   />
                 </div>
-                <button
-                  onClick={handleClick}
-                  type="submit"
-                  className="btn btn-primary btn-block"
-                >
+                <button type="submit" className="btn btn-primary btn-block">
                   Login
                 </button>
                 <Link to="/Register" className="btn btn-secondary btn-block">

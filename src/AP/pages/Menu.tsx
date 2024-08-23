@@ -2,29 +2,32 @@ import React, { useEffect, useState } from "react";
 import "../assets/css/light-bootstrap-dashboard.css";
 import { Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { Dropdown } from "react-bootstrap";
 import axios from "axios";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-//import myImage from "../assets/img/s.png"; // Adjust path based on your file structure
+import { Dropdown } from "react-bootstrap";
+
+interface Menu {
+  id: number;
+  name: string;
+  ingredients: string;
+  allergens: string;
+}
 
 const Menu: React.FC = () => {
-  interface MenuItem {
-    id: number;
-    name: string;
-    ingredients: string;
-    allergens: string;
-  }
-
-  const [menu, setMenu] = useState<MenuItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [menu, setMenu] = useState<Menu[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAllMenu = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/menu/");
+        const res = await axios.get("http://localhost:5000/api/menu/", {
+          withCredentials: true,
+        });
         setMenu(res.data);
       } catch (err) {
-        console.error("Error during GET request:", err);
+        console.error("Error fetching menu:", err);
+        setError("Failed to fetch menu.");
       }
     };
     fetchAllMenu();
@@ -32,53 +35,38 @@ const Menu: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:5000/api/menu/${id}`);
-      const res = await axios.get("http://localhost:5000/api/menu/");
+      await axios.delete(`http://localhost:5000/api/menu/${id}`, {
+        withCredentials: true,
+      });
+      const res = await axios.get("http://localhost:5000/api/menu/", {
+        withCredentials: true,
+      });
       setMenu(res.data);
     } catch (err) {
       console.error("Error during DELETE request:", err);
+      setError("Failed to delete item.");
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/logout",
+        {},
+        { withCredentials: true }
+      );
+      navigate("/login"); // Redirect to login after logout
+    } catch (err) {
+      setError("Logout failed.");
+      console.error("Logout failed:", err);
+    }
+  };
   const capitalizeWords = (str: string) => {
     return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
-  const [auth, setAuth] = useState(false);
-  const [message, setMessage] = useState("");
-  const [name, setName] = useState("");
-  const navigate = useNavigate();
-
-  axios.defaults.withCredentials = true;
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/auth"); // Change to actual auth endpoint
-        if (res.status === 200) {
-          setAuth(true);
-          setName(res.data.name);
-        } else {
-          setAuth(false);
-        }
-      } catch (err) {
-        console.error("Authentication check failed:", err);
-        setAuth(false);
-      }
-    };
-
-    checkAuth();
-  }, [navigate]);
-
   return (
     <div>
-      {auth ? (
-        <div>
-          <h3>{message}</h3>
-        </div>
-      ) : (
-        <Navigate to="/Login" />
-      )}
       <div className="wrapper">
         <div className="sidebar">
           <div className="sidebar-wrapper">
@@ -140,13 +128,12 @@ const Menu: React.FC = () => {
                     >
                       Account
                     </Dropdown.Toggle>
-
                     <Dropdown.Menu className="custom-dropdown-menu">
                       <Dropdown.Item as={Link} to="/ChangePassword">
                         Change Password
                       </Dropdown.Item>
                       <Dropdown.Divider />
-                      <Dropdown.Item as={Link} to="/Login">
+                      <Dropdown.Item onClick={handleLogout}>
                         Logout
                       </Dropdown.Item>
                     </Dropdown.Menu>
@@ -161,7 +148,6 @@ const Menu: React.FC = () => {
                 <div className="col-md-12">
                   <div
                     style={{
-                      //backgroundImage: `url(${myImage})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                       backgroundColor: "rgb(94, 2, 49)",
@@ -172,7 +158,6 @@ const Menu: React.FC = () => {
                         Menu
                       </h4>
                     </div>
-
                     <div className="container-fluid">
                       <div className="card shadow mb-4">
                         <div className="card-header py-3">
@@ -212,7 +197,6 @@ const Menu: React.FC = () => {
                         </div>
                       </div>
                     </div>
-
                     <div className="card-body">
                       <div className="table-responsive">
                         <table

@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../assets/css/light-bootstrap-dashboard.css"; // Custom styles
 import "../assets/css/bootstrap.min.css"; // Custom styles
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 
 const MenuAdd: React.FC = () => {
   const [menu, setMenu] = useState({
     name: "",
-    ingredients: "", 
+    ingredients: "",
     allergens: "",
   });
 
@@ -36,7 +36,6 @@ const MenuAdd: React.FC = () => {
           backgroundImage: `url('../assets/img/8a3af60e-5fb9-4a9e-817f-a5af303ba85d.avif')`,
         }}
       >
-
         <div className="sidebar-wrapper">
           <div className="logo">
             <a className="simple-text">Electric Beets Allergen</a>
@@ -88,7 +87,7 @@ const MenuAdd: React.FC = () => {
                   </a>
                 </li>
               </ul>
-               <ul className="navbar-nav ml-auto">
+              <ul className="navbar-nav ml-auto">
                 <Dropdown className="nav-item dropdown">
                   <Dropdown.Toggle
                     variant="text"
