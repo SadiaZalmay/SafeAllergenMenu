@@ -8,6 +8,7 @@ import mysql from "mysql2";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import cookieParser from "cookie-parser";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -62,7 +63,7 @@ const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
-  const jwtSecret = process.env.JWT_SECRET || "jwt_secret";
+  const jwtSecret = process.env.JWT_SECRET;
 
   jwt.verify(token, jwtSecret, (err, user) => {
     if (err) return res.status(403).json({ error: "Forbidden" });
@@ -128,7 +129,7 @@ app.post("/api/login", (req, res) => {
 
         if (isMatch) {
           const name = data[0].email;
-          const jwtSecret = process.env.JWT_SECRET || "jwt_secret";
+          const jwtSecret = process.env.JWT_SECRET;
           jwt.sign({ name }, jwtSecret, { expiresIn: "1h" }, (err, token) => {
             if (err) {
               return res
@@ -137,7 +138,7 @@ app.post("/api/login", (req, res) => {
             }
             res.cookie("token", token, {
               httpOnly: true,
-              secure: false, // Ensure it's false for local development
+              secure: false,
               sameSite: "strict",
             });
 
@@ -152,6 +153,143 @@ app.post("/api/login", (req, res) => {
     );
   });
 });
+//==============================
+//       FORGOT PASSWORD
+//==============================
+app.post("/api/forgot-password", (req, res) => {
+  const { email } = req.body;
+
+  // Check if the user exists
+  const sql = "SELECT * FROM login WHERE email = ?";
+  connection.query(sql, [email], (err, data) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ error: "Server error. Please try again later." });
+    }
+
+    if (data.length === 0) {
+      return res.status(404).json({ error: "Email not found." });
+    }
+
+    // Generate a reset token
+    const jwtSecret = process.env.JWT_SECRET;
+    const resetToken = jwt.sign({ email }, jwtSecret, { expiresIn: "10m" });
+
+    // TODO: Send reset token to email (use a mailing service like Nodemailer)
+    console.log(`Password reset token for ${email}: ${resetToken}`);
+
+    return res
+      .status(200)
+      .json({ message: "Password reset link sent to your email." });
+  });
+});
+//==============================
+//       FORGOT PASSWORD
+//==============================
+app.post("/api/forgotpassword", (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required." });
+  }
+  // Check if the user exists
+  const sql = "SELECT * FROM login WHERE email = ?";
+  connection.query(sql, [email], (err, data) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ error: "Server error. Please try again later." });
+    }
+
+    if (data.length === 0) {
+      return res.status(404).json({ error: "Email not found." });
+    }
+
+    // Generate a reset token
+    const jwtSecret = process.env.JWT_SECRET;
+    const resetToken = jwt.sign({ email }, jwtSecret, { expiresIn: "30m" });
+
+    // Create the reset link
+    const resetLink = `http://localhost:3000/ResetPassword/${resetToken}`;
+
+    // Email sending logic
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Password Reset",
+      text: `Click the link to reset your password: ${resetLink}`,
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error("Error sending email:", err);
+        return res
+          .status(500)
+          .json({ error: "Failed to send email. Please try again later." });
+      } else {
+        console.log("Email sent:", info.response);
+        return res
+          .status(200)
+          .json({ message: "Password reset link sent to your email." });
+      }
+    });
+  });
+});
+//==============================
+//       RESET PASSWORD
+//==============================
+app.post("/api/reset-password", (req, res) => {
+  const { resetToken, newPassword } = req.body;
+
+  if (!resetToken || !newPassword) {
+    return res.status(400).json({ error: "Invalid request." });
+  }
+
+  // Verify the token
+  const jwtSecret = process.env.JWT_SECRET;
+  jwt.verify(resetToken, jwtSecret, (err, decoded) => {
+    if (err) {
+      return res.status(400).json({ error: "Invalid or expired token." });
+    }
+
+    // Hash the new password
+    bcrypt.hash(newPassword, saltRounds, (err, hashedPassword) => {
+      if (err) {
+        return res.status(500).json({ error: "Error hashing password." });
+      }
+
+      // Update the user's password in the database
+      const sql = "UPDATE login SET password = ? WHERE email = ?";
+      connection.query(sql, [hashedPassword, decoded.email], (err) => {
+        if (err) {
+          return res.status(500).json({ error: "Failed to reset password." });
+        }
+        return res.status(200).json({ message: "Password reset successful." });
+      });
+    });
+  });
+});
+//Confirmation email sending after reseting password
+const confirmationMailOptions = {
+  from: process.env.EMAIL_USER,
+  to: email,
+  subject: "Password Reset Confirmation",
+  text: "Your password has been successfully reset.",
+};
+
+transporter.sendMail(confirmationMailOptions, (err, info) => {
+  if (err) {
+    console.error("Error sending confirmation email:", err);
+  } else {
+    console.log("Confirmation email sent:", info.response);
+  }
+});
+
+
+//==============================
+//       CHANGE PASSWORD
+//==============================
 
 //==============================
 //            LOGOUT

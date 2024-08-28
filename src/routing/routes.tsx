@@ -14,6 +14,7 @@ import Page2Add from "../AP/pages/Page2Add";
 import Page2Edit from "../AP/pages/Page2Edit";
 import Login from "../AP/pages/Login";
 import Register from "../AP/pages/Register";
+import ForgotPassword from "../AP/pages/ForgotPassword"; 
 import ChangePassword from "../AP/pages/ChangePassword";
 import AuthGuard from "../AP/pages/AuthGuard"; 
 
@@ -104,6 +105,10 @@ const router = createBrowserRouter([
   {
     path: "/Login",
     element: <Login />, // Login page
+  },
+  {
+    path: "/ForgotPassword",
+    element: <ForgotPassword />, // ForotPassword page
   },
   {
     path: "/Register",

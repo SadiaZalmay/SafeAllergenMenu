@@ -112,6 +112,9 @@ const Login: React.FC = () => {
                 <Link to="/Register" className="btn btn-secondary btn-block">
                   Create Account
                 </Link>
+                <Link to="/ForgotPassword" className="btn-block">
+                  Need Help Signing In?
+                </Link>
               </form>
             </div>
           </div>
