@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../assets/css/light-bootstrap-dashboard.css";
 import axios from "axios";
 
@@ -75,6 +75,9 @@ const Register: React.FC = () => {
                 >
                   Register
                 </button>
+                <Link to="/Login" className="btn-block">
+                  Already have an account?
+                </Link>
               </form>
             </div>
           </div>

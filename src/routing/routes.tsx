@@ -112,7 +112,7 @@ const router = createBrowserRouter([
     element: <ForgotPassword />, // ForotPassword page
   },
   {
-    path: "/ResetPassword",
+    path: "/ResetPassword/:token",
     element: <ResetPassword />, // ResetPassword page
   },
   {

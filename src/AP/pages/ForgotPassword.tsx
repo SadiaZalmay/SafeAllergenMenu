@@ -61,8 +61,8 @@ const ForgotPassword: React.FC = () => {
                 <button type="submit" className="btn btn-primary btn-block">
                   Send reset link
                 </button>
-                <Link to="/Register" className="btn-block">
-                  Already have an account?
+                <Link to="/ChangePassword" className="btn-block">
+                  Change Password
                 </Link>
                 <Link to="/Register" className="btn-block">
                   Create Account

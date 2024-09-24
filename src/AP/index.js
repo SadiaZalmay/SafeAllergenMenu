@@ -10,6 +10,7 @@ import bcrypt from "bcrypt";
 import cookieParser from "cookie-parser";
 import nodemailer from "nodemailer";
 
+
 dotenv.config();
 
 const saltRounds = 10;
@@ -189,7 +190,7 @@ app.post("/api/forgotpassword/", (req, res) => {
       service: 'gmail',
       auth: {
         user: 'mangalnadima@gmail.com',
-        pass: 'Sid@786*'
+        pass: 'vyyu mtho zuvm kuwc'
       }      
     });
     
