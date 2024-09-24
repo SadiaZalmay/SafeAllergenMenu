@@ -104,7 +104,7 @@ app.post("/api/register/", async (req, res) => {
 //==============================
 //            LOGIN
 //==============================
-app.post("/api/login", (req, res) => {
+app.post("/api/login/", (req, res) => {
   const sql = "SELECT * FROM login WHERE email = ?";
   connection.query(sql, [req.body.email], (err, data) => {
     if (err) {
@@ -130,7 +130,10 @@ app.post("/api/login", (req, res) => {
         if (isMatch) {
           const name = data[0].email;
           const jwtSecret = process.env.JWT_SECRET;
-          jwt.sign({ name }, jwtSecret, { expiresIn: "1d" }, (err, token) => {
+          if (!jwtSecret) {
+            return res.status(500).json({ Error: "JWT secret is not set." });
+          }
+          jwt.sign({ name }, jwtSecret, { expiresIn: "1h" }, (err, token) => {
             if (err) {
               return res
                 .status(500)
@@ -153,41 +156,11 @@ app.post("/api/login", (req, res) => {
     );
   });
 });
+
 //==============================
 //       FORGOT PASSWORD
 //==============================
-app.post("/api/forgot-password", (req, res) => {
-  const { email } = req.body;
-
-  // Check if the user exists
-  const sql = "SELECT * FROM login WHERE email = ?";
-  connection.query(sql, [email], (err, data) => {
-    if (err) {
-      return res
-        .status(500)
-        .json({ error: "Server error. Please try again later." });
-    }
-
-    if (data.length === 0) {
-      return res.status(404).json({ error: "Email not found." });
-    }
-
-    // Generate a reset token
-    const jwtSecret = process.env.JWT_SECRET;
-    const resetToken = jwt.sign({ email }, jwtSecret, { expiresIn: "10m" });
-
-    // TODO: Send reset token to email (use a mailing service like Nodemailer)
-    console.log(`Password reset token for ${email}: ${resetToken}`);
-
-    return res
-      .status(200)
-      .json({ message: "Password reset link sent to your email." });
-  });
-});
-//==============================
-//       FORGOT PASSWORD
-//==============================
-app.post("/api/forgotpassword", (req, res) => {
+app.post("/api/forgotpassword/", (req, res) => {
   const { email } = req.body;
 
   if (!email) {
@@ -207,85 +180,39 @@ app.post("/api/forgotpassword", (req, res) => {
     }
 
     // Generate a reset token
-    const jwtSecret = process.env.JWT_SECRET;
-    const resetToken = jwt.sign({ email }, jwtSecret, { expiresIn: "30m" });
+    const resetToken = jwt.sign({ email }, 'secret', { expiresIn: "30m" });
 
     // Create the reset link
-    const resetLink = `http://localhost:3000/ResetPassword/${resetToken}`;
+    const resetLink = `http://localhost:3000/api/resetpassword/${resetToken}`;
 
-    // Email sending logic
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
+    var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'sadia.zalmay@gmail.com',
+        pass: 'idontknow@420'
+      }      
+    });
+    
+    var mailOptions = {
+      from: 'sadia.zalmay@gmail.com',
       to: email,
-      subject: "Password Reset",
-      text: `Click the link to reset your password: ${resetLink}`,
+      subject: 'Forgot Password',
+      text: `Click the link to reset your password: ${resetLink}`
     };
-
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.error("Error sending email:", err);
-        return res
-          .status(500)
-          .json({ error: "Failed to send email. Please try again later." });
+    
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+        return res.status(500).json({ error: "Failed to send the email." });
       } else {
-        console.log("Email sent:", info.response);
-        return res
-          .status(200)
-          .json({ message: "Password reset link sent to your email." });
-      }
+        return res.status(200).json({ message: "Successfully sent the email!" });
+      }      
     });
   });
 });
 //==============================
 //       RESET PASSWORD
 //==============================
-app.post("/api/reset-password", (req, res) => {
-  const { resetToken, newPassword } = req.body;
-
-  if (!resetToken || !newPassword) {
-    return res.status(400).json({ error: "Invalid request." });
-  }
-
-  // Verify the token
-  const jwtSecret = process.env.JWT_SECRET;
-  jwt.verify(resetToken, jwtSecret, (err, decoded) => {
-    if (err) {
-      return res.status(400).json({ error: "Invalid or expired token." });
-    }
-
-    // Hash the new password
-    bcrypt.hash(newPassword, saltRounds, (err, hashedPassword) => {
-      if (err) {
-        return res.status(500).json({ error: "Error hashing password." });
-      }
-
-      // Update the user's password in the database
-      const sql = "UPDATE login SET password = ? WHERE email = ?";
-      connection.query(sql, [hashedPassword, decoded.email], (err) => {
-        if (err) {
-          return res.status(500).json({ error: "Failed to reset password." });
-        }
-        return res.status(200).json({ message: "Password reset successful." });
-      });
-    });
-  });
-});
-//Confirmation email sending after reseting password
-const confirmationMailOptions = {
-  from: process.env.EMAIL_USER,
-  to: email,
-  subject: "Password Reset Confirmation",
-  text: "Your password has been successfully reset.",
-};
-
-transporter.sendMail(confirmationMailOptions, (err, info) => {
-  if (err) {
-    console.error("Error sending confirmation email:", err);
-  } else {
-    console.log("Confirmation email sent:", info.response);
-  }
-});
-
 
 //==============================
 //       CHANGE PASSWORD

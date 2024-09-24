@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../assets/css/light-bootstrap-dashboard.css";
 import axios from "axios";
 
 const ForgotPassword: React.FC = () => {
   const [values, setValues] = useState({
-    username: "",
     email: "",
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -19,14 +18,17 @@ const ForgotPassword: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    axios
-      .post("http://localhost:5000/api/forgotpassword", { values })
-      .then((res) => {
-        if (res.data.Status === 200) {
-          navigate("/Login");
-        }
-      })
-      .catch((err) => console.error("Error during login:", err));
+    try {
+      const res = await axios.post("http://localhost:5000/api/forgotpassword/", values);
+      if (res.data.Status === 200) {
+        navigate("/Login");
+      } else {
+        setErrorMessage("An error occurred. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error during password reset:", err);
+      setErrorMessage("An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -61,7 +63,7 @@ const ForgotPassword: React.FC = () => {
                 <Link to="/Register" className="btn-block">
                   Already have an account?
                 </Link>
-                <Link to="/Register" className=" btn-block">
+                <Link to="/Register" className="btn-block">
                   Create Account
                 </Link>
               </form>

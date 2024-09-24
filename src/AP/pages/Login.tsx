@@ -31,24 +31,24 @@ const Login: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/login",
+        "http://localhost:5000/api/login/",
         values,
-        { withCredentials: true } // Ensure this matches with server-side cookie setting
+        { withCredentials: true }
       );
 
       if (response.status === 200) {
         setIsAuthenticated(true);
-        navigate("/AP"); // Redirect on successful login
+        navigate("/AP"); 
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         const status = err.response.status;
         const errorMsg =
-          err.response.data.error || "An unexpected error occurred."; // Ensure error field matches server
+          err.response.data.error || "An unexpected error occurred.";
 
         if (status === 401) {
           setErrorMessage(errorMsg);
-        } else {
+        } else{
           setErrorMessage("An unexpected error occurred.");
         }
       } else {
