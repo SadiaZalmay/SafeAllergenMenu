@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from 'react-router-dom';
 import App from "../App";
 import App2 from "../App2";
 
@@ -18,6 +18,7 @@ import ForgotPassword from "../AP/pages/ForgotPassword";
 import ChangePassword from "../AP/pages/ChangePassword";
 import ResetPassword from "../AP/pages/ResetPassword";
 import AuthGuard from "../AP/pages/AuthGuard"; 
+import NotFound from "../AP/pages/NotFound"; 
 
 
 // Create a browser router for the application routes
@@ -112,7 +113,7 @@ const router = createBrowserRouter([
     element: <ForgotPassword />, // ForotPassword page
   },
   {
-    path: "/ResetPassword/:token",
+    path: "/ResetPassword",
     element: <ResetPassword />, // ResetPassword page
   },
   {
@@ -123,6 +124,10 @@ const router = createBrowserRouter([
     path: "/ChangePassword",
     element: <ChangePassword />, // Change user password page
   },
+  {
+    path: "*",
+    element: <NotFound />,
+},
 ]);
 
-export default router; // Export the router for use in the application
+export default router; 

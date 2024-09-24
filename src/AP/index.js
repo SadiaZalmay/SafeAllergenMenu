@@ -64,9 +64,7 @@ const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
-  const jwtSecret = process.env.JWT_SECRET;
-
-  jwt.verify(token, jwtSecret, (err, user) => {
+  jwt.verify(token, 'secret', (err, user) => {
     if (err) return res.status(403).json({ error: "Forbidden" });
     req.user = user;
     next();
@@ -130,11 +128,10 @@ app.post("/api/login/", (req, res) => {
 
         if (isMatch) {
           const name = data[0].email;
-          const jwtSecret = process.env.JWT_SECRET;
-          if (!jwtSecret) {
+          if (!'secret') {
             return res.status(500).json({ Error: "JWT secret is not set." });
           }
-          jwt.sign({ name }, jwtSecret, { expiresIn: "1h" }, (err, token) => {
+          jwt.sign({ name }, 'secret', { expiresIn: "1h" }, (err, token) => {
             if (err) {
               return res
                 .status(500)
@@ -181,10 +178,10 @@ app.post("/api/forgotpassword/", (req, res) => {
     }
 
     // Generate a reset token
-    const resetToken = jwt.sign({ email }, 'secret', { expiresIn: "30m" });
+    const token = jwt.sign({ email }, 'secret', { expiresIn: "1h" });
 
     // Create the reset link
-    const resetLink = `http://localhost:3000/ResetPassword/${resetToken}`;
+    const resetLink = `http://localhost:3000/ResetPassword?token=${token}`;
 
     var transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -193,6 +190,9 @@ app.post("/api/forgotpassword/", (req, res) => {
         pass: 'vyyu mtho zuvm kuwc'
       }      
     });
+    // Inside your forgot password handler
+  console.log('Reset Link:', resetLink); // Add this line
+
     
     var mailOptions = {
       from: 'mangalnadima@gmail.com',
@@ -212,9 +212,52 @@ app.post("/api/forgotpassword/", (req, res) => {
   });
 });
 //==============================
+//       TOKEN VALIDATION 
+//==============================
+app.post('/api/validate-token', (req, res) => {
+  const { token } = req.body; // Get token from request body
+  console.log("Received token for validation:", token); // Debug log
+
+  if (!token) {
+    return res.status(400).json({ error: "Token is required." });
+  }
+
+  jwt.verify(token, 'secret', (err, decoded) => {
+    if (err) {
+      console.error("Token verification error:", err); // Debug log
+      return res.status(401).json({ error: "Invalid or expired token." });
+    }
+    return res.status(200).json({ message: "Token is valid.", email: decoded.email });
+  });
+});
+
+//==============================
 //       RESET PASSWORD
 //==============================
+app.post('/api/resetpassword', async (req, res) => { 
+  const { token, newPassword } = req.body;
 
+  // Verify the token
+  jwt.verify(token, 'secret', async (err, decoded) => { 
+    if (err) {
+      return res.status(400).json({ error: 'Invalid token.' });
+    }
+
+    const email = decoded.email; 
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds); 
+
+    const sql = "UPDATE login SET password = ? WHERE email = ?";
+    connection.query(sql, [hashedPassword, email], (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to reset password.' });
+      }
+
+      return res.status(200).json({ message: 'Password successfully reset!' });
+    });
+  });
+});
 //==============================
 //       CHANGE PASSWORD
 //==============================
