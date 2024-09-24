@@ -130,7 +130,7 @@ app.post("/api/login", (req, res) => {
         if (isMatch) {
           const name = data[0].email;
           const jwtSecret = process.env.JWT_SECRET;
-          jwt.sign({ name }, jwtSecret, { expiresIn: "1h" }, (err, token) => {
+          jwt.sign({ name }, jwtSecret, { expiresIn: "1d" }, (err, token) => {
             if (err) {
               return res
                 .status(500)
