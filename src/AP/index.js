@@ -183,18 +183,18 @@ app.post("/api/forgotpassword/", (req, res) => {
     const resetToken = jwt.sign({ email }, 'secret', { expiresIn: "30m" });
 
     // Create the reset link
-    const resetLink = `http://localhost:3000/api/resetpassword/${resetToken}`;
+    const resetLink = `http://localhost:3000/ResetPassword/${resetToken}`;
 
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'sadia.zalmay@gmail.com',
-        pass: 'idontknow@420'
+        user: 'mangalnadima@gmail.com',
+        pass: 'Sid@786*'
       }      
     });
     
     var mailOptions = {
-      from: 'sadia.zalmay@gmail.com',
+      from: 'mangalnadima@gmail.com',
       to: email,
       subject: 'Forgot Password',
       text: `Click the link to reset your password: ${resetLink}`

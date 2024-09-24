@@ -20,7 +20,7 @@ const ForgotPassword: React.FC = () => {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:5000/api/forgotpassword/", values);
-      if (res.data.Status === 200) {
+      if (res.status === 200) {  // Changed from res.data.Status to res.status
         navigate("/Login");
       } else {
         setErrorMessage("An error occurred. Please try again.");
@@ -30,6 +30,7 @@ const ForgotPassword: React.FC = () => {
       setErrorMessage("An error occurred. Please try again.");
     }
   };
+  
 
   return (
     <div className="container">
