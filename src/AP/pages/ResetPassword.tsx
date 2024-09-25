@@ -6,7 +6,7 @@ import '../assets/css/light-bootstrap-dashboard.css';
 
 const ResetPassword: React.FC = () => {
     const location = useLocation();
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
@@ -23,8 +23,8 @@ const ResetPassword: React.FC = () => {
                 return;
             }
             try {
-                const response = await axios.post('/api/validate-token', { token });
-                if (response.data.message === "Token is valid.") {
+                const res = await axios.post('/api/validate-token', { token });
+                if (res.status === 200) {
                     setIsValidToken(true);
                 } else {
                     setIsValidToken(false);
@@ -51,11 +51,11 @@ const ResetPassword: React.FC = () => {
         setLoading(true);
         const { token } = queryString.parse(location.search); // Get token from query string again
         try {
-            const response = await axios.post('/api/resetpassword', {
+            const res = await axios.post('/api/resetpassword', {
                 token,
                 newPassword
             });
-            setSuccess(response.data.message);
+            setSuccess(res.status);
             setError('');
             navigate('/login');
         } catch (err) {
