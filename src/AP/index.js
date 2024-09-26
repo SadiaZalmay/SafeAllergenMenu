@@ -10,7 +10,6 @@ import bcrypt from "bcrypt";
 import cookieParser from "cookie-parser";
 import nodemailer from "nodemailer";
 
-
 dotenv.config();
 
 const saltRounds = 10;
@@ -31,7 +30,7 @@ app.use(
 );
 
 //==============================
-//      CONNECTION
+//          CONNECTION
 //==============================
 const connection = mysql.createConnection({
   host: "127.0.0.1",
@@ -64,7 +63,7 @@ const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
-  jwt.verify(token, 'secret', (err, user) => {
+  jwt.verify(token, "secret", (err, user) => {
     if (err) return res.status(403).json({ error: "Forbidden" });
     req.user = user;
     next();
@@ -128,10 +127,10 @@ app.post("/api/login/", (req, res) => {
 
         if (isMatch) {
           const name = data[0].email;
-          if (!'secret') {
+          if (!"secret") {
             return res.status(500).json({ Error: "JWT secret is not set." });
           }
-          jwt.sign({ name }, 'secret', { expiresIn: "1h" }, (err, token) => {
+          jwt.sign({ name }, "secret", { expiresIn: "1h" }, (err, token) => {
             if (err) {
               return res
                 .status(500)
@@ -158,7 +157,7 @@ app.post("/api/login/", (req, res) => {
 //==============================
 //       FORGOT PASSWORD
 //==============================
-app.post("/api/forgotpassword/", (req, res) => {
+app.post("/api/forgotpassword/", async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
@@ -178,89 +177,136 @@ app.post("/api/forgotpassword/", (req, res) => {
     }
 
     // Generate a reset token
-    const token = jwt.sign({ email }, 'secret', { expiresIn: "1h" });
+    const token = jwt.sign({ email }, "secret", { expiresIn: "1h" });
 
     // Create the reset link
     const resetLink = `http://localhost:3000/ResetPassword?token=${token}`;
 
     var transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
-        user: 'mangalnadima@gmail.com',
-        pass: 'vyyu mtho zuvm kuwc'
-      }      
+        user: "mangalnadima@gmail.com",
+        pass: "vyyu mtho zuvm kuwc",
+      },
     });
-    // Inside your forgot password handler
-  console.log('Reset Link:', resetLink); // Add this line
+    console.log("Reset Link:", resetLink);
 
-    
     var mailOptions = {
-      from: 'mangalnadima@gmail.com',
+      from: "mangalnadima@gmail.com",
       to: email,
-      subject: 'Forgot Password',
-      text: `Click the link to reset your password: ${resetLink}`
+      subject: "Forgot Password",
+      text: `Click the link to reset your password: ${resetLink}`,
     };
-    
-    transporter.sendMail(mailOptions, function(error, info){
+
+    transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
         return res.status(500).json({ error: "Failed to send the email." });
       } else {
-        return res.status(200).json({ message: "Successfully sent the email!" });
-      }      
+        return res
+          .status(200)
+          .json({ message: "Successfully sent the email!" });
+      }
     });
   });
 });
 //==============================
-//       TOKEN VALIDATION 
+//       TOKEN VALIDATION
 //==============================
-app.post('/api/validate-token', (req, res) => {
-  const { token } = req.body; // Get token from request body
-  console.log("Received token for validation:", token); // Debug log
+app.post("/api/token", async (req, res) => {
+  const { token } = req.body;
+  console.log("Received token for validation:", token);
 
   if (!token) {
     return res.status(400).json({ error: "Token is required." });
   }
 
-  jwt.verify(token, 'secret', (err, decoded) => {
+  jwt.verify(token, "secret", (err, decoded) => {
     if (err) {
-      console.error("Token verification error:", err); // Debug log
+      console.error("Token verification error:", err);
       return res.status(401).json({ error: "Invalid or expired token." });
     }
-    return res.status(200).json({ message: "Token is valid.", email: decoded.email });
+    return res
+      .status(200)
+      .json({ message: "Token is valid.", email: decoded.email });
   });
 });
 
 //==============================
 //       RESET PASSWORD
 //==============================
-app.post('/api/resetpassword', async (req, res) => { 
+app.post("/api/resetpassword", async (req, res) => {
   const { token, newPassword } = req.body;
 
   // Verify the token
-  jwt.verify(token, 'secret', async (err, decoded) => { 
+  jwt.verify(token, "secret", async (err, decoded) => {
     if (err) {
-      return res.status(400).json({ error: 'Invalid token.' });
+      return res.status(400).json({ error: "Invalid token." });
     }
 
-    const email = decoded.email; 
+    const email = decoded.email;
 
     // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, saltRounds); 
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
     const sql = "UPDATE login SET password = ? WHERE email = ?";
     connection.query(sql, [hashedPassword, email], (err, result) => {
       if (err) {
-        return res.status(500).json({ error: 'Failed to reset password.' });
+        return res.status(500).json({ error: "Failed to reset password." });
       }
 
-      return res.status(200).json({ message: 'Password successfully reset!' });
+      return res.status(200).json({ message: "Password successfully reset!" });
     });
   });
 });
-//==============================
-//       CHANGE PASSWORD
-//==============================
+app.post("/api/changepassword", authenticateToken, async (req, res) => {
+  const { password, newPassword } = req.body;
+  const email = req.user.name; // Extract email from token
+
+  // Fetch the current password hash from the database
+  const sql = "SELECT password FROM login WHERE email = ?";
+  connection.query(sql, [email], async (err, data) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res
+        .status(500)
+        .json({ error: "Server error. Please try again later." });
+    }
+
+    if (data.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // Compare the provided current password with the stored password hash
+    const isMatch = await bcrypt.compare(password, data[0].password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Current password is incorrect." });
+    }
+
+    // Check if the new password is the same as the current password
+    if (newPassword === password) {
+      return res.status(400).json({
+        error: "New password cannot be the same as the current password.",
+      });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    const updateSql = "UPDATE login SET password = ? WHERE email = ?";
+    connection.query(updateSql, [hashedPassword, email], (err, result) => {
+      if (err) {
+        console.error("Database update error:", err);
+        return res
+          .status(500)
+          .json({ error: "Failed to change the password." });
+      }
+      return res
+        .status(200)
+        .json({ message: "Password successfully changed!" });
+    });
+  });
+});
 
 //==============================
 //            LOGOUT
@@ -351,7 +397,6 @@ app.get("/api/menu/:id", (req, res) => {
 //---------------------------------
 //       PAGE 1 ROUTES
 //---------------------------------
-
 // Getting Data from DB for Page 1
 app.get("/api/page1/", (req, res) => {
   const query = "SELECT * FROM page1"; // SQL query to fetch all page1 items

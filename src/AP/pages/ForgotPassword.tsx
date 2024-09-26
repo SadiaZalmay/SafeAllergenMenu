@@ -19,8 +19,11 @@ const ForgotPassword: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/forgotpassword/", values);
-      if (res.status === 200) { 
+      const res = await axios.post(
+        "http://localhost:5000/api/forgotpassword/",
+        values
+      );
+      if (res.status === 200) {
         navigate("/Login");
       } else {
         setErrorMessage("An error occurred. Please try again.");
@@ -30,7 +33,6 @@ const ForgotPassword: React.FC = () => {
       setErrorMessage("An error occurred. Please try again.");
     }
   };
-  
 
   return (
     <div className="container">

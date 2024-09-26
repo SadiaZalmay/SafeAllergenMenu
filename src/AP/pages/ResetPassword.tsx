@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import queryString from 'query-string'; // Import query-string
+import queryString from 'query-string'; 
 import '../assets/css/light-bootstrap-dashboard.css';
 
 const ResetPassword: React.FC = () => {
@@ -23,7 +23,8 @@ const ResetPassword: React.FC = () => {
                 return;
             }
             try {
-                const res = await axios.post('/api/validate-token', { token });
+                const encodedToken = encodeURIComponent(token); // Encode the token
+                const res = await axios.post('http://localhost:5000/api/token', { token: encodedToken });
                 if (res.status === 200) {
                     setIsValidToken(true);
                 } else {
@@ -38,7 +39,7 @@ const ResetPassword: React.FC = () => {
         };
 
         validateToken();
-    }, [location.search]); // Depend on location.search
+    }, [location.search]);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -49,13 +50,14 @@ const ResetPassword: React.FC = () => {
         }
 
         setLoading(true);
-        const { token } = queryString.parse(location.search); // Get token from query string again
+        const { token } = queryString.parse(location.search) as { token?: string };
         try {
-            const res = await axios.post('/api/resetpassword', {
-                token,
+            const encodedToken = encodeURIComponent(token); // Encode the token
+            const res = await axios.post('http://localhost:5000/api/resetpassword', {
+                token: encodedToken,
                 newPassword
             });
-            setSuccess(res.status);
+            setSuccess(res.data.message);
             setError('');
             navigate('/login');
         } catch (err) {

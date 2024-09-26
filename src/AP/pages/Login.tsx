@@ -38,7 +38,7 @@ const Login: React.FC = () => {
 
       if (response.status === 200) {
         setIsAuthenticated(true);
-        navigate("/AP"); 
+        navigate("/AP");
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
@@ -47,8 +47,8 @@ const Login: React.FC = () => {
           err.response.data.error || "An unexpected error occurred.";
 
         if (status === 401) {
-          setErrorMessage(errorMsg);
-        } else{
+          setErrorMessage("Incorrect email or password.");
+        } else {
           setErrorMessage("An unexpected error occurred.");
         }
       } else {
