@@ -9,7 +9,7 @@ const MenuAdd: React.FC = () => {
   const [menu, setMenu] = useState({
     name: "",
     ingredients: "",
-    allergens: "",
+    category: "",
   });
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
@@ -187,7 +187,7 @@ const MenuAdd: React.FC = () => {
                         <label>Allergen</label>
                         <input
                           type="text"
-                          name="allergens"
+                          name="category"
                           className="form-control"
                           onChange={handleChange}
                         />

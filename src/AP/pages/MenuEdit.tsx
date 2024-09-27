@@ -9,7 +9,7 @@ const MenuEdit: React.FC = () => {
   const [menu, setMenu] = useState({
     name: "",
     ingredients: "",
-    allergens: "",
+    category: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +41,7 @@ const MenuEdit: React.FC = () => {
         setMenu({
           name: response.data.name,
           ingredients: response.data.ingredients,
-          allergens: response.data.allergens,
+          category: response.data.category,
         });
       } catch (err) {
         console.error("Error fetching menu data:", err);
@@ -209,12 +209,12 @@ const MenuEdit: React.FC = () => {
                         />
                       </div>
                       <div className="form-group">
-                        <label>Allergens</label>
+                        <label>category</label>
                         <input
                           type="text"
-                          name="allergens"
+                          name="category"
                           className="form-control"
-                          value={menu.allergens}
+                          value={menu.category}
                           onChange={handleInputChange}
                         />
                       </div>

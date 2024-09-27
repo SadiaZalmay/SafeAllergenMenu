@@ -177,6 +177,11 @@ const Page1Add: React.FC = () => {
                       <div className="form-group">
                         <label>Logo</label>
                         <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleFileChange(e)}
+                        />
+                        <input
                           type="text"
                           name="logo"
                           className="form-control"
@@ -212,10 +217,7 @@ const Page1Add: React.FC = () => {
                           Back
                         </button>
                       </a>
-                      <button
-                        type="submit"
-                        className="btn btn-primary"
-                      >
+                      <button type="submit" className="btn btn-primary">
                         Save
                       </button>
                     </div>

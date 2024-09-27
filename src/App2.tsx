@@ -14,7 +14,6 @@ import Previous from "./components/Previous";
 import "./App.css";
 
 const App2 = () => {
-  // Interface for App item
   interface App2Item {
     id: number;
     logo: string;
@@ -22,19 +21,17 @@ const App2 = () => {
     paragraph2: string;
   }
 
-  // Interface for Allergens
   interface App2Allergens {
+    id: number;
     name: string;
-    index: number;
-    length: number;
+    category?: string; // Make allergen optional to prevent TypeErrors
   }
 
-  const location = useLocation(); // Get the data passed to App2
-  const { selectedAllergens } = location.state; // Destructure selectedAllergens from location.state
+  const location = useLocation();
+  const { selectedAllergens } = location.state || { selectedAllergens: [] }; // Default to empty array if undefined
   const [filteredMenu, setFilteredMenu] = useState<App2Allergens[]>([]);
   const [app2, setApp2] = useState<App2Item[]>([]);
 
-  // Fetch data from the database for the layout
   useEffect(() => {
     const fetchAllApp2 = async () => {
       try {
@@ -47,7 +44,6 @@ const App2 = () => {
     fetchAllApp2();
   }, []);
 
-  // Fetch filtered menu based on selected allergens
   useEffect(() => {
     const fetchFilteredMenu = async () => {
       try {
@@ -65,10 +61,46 @@ const App2 = () => {
     fetchFilteredMenu();
   }, [selectedAllergens]);
 
-  // Function to capitalize each word
-  const capitalizeWords = (str: string) => {
-    return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+  const categorizeMenuItems = (items: App2Allergens[]) => {
+    const categories = {
+      Sides: [],
+      Snacks: [],
+      Soups: [],
+      Mains: [],
+      Sweets: [],
+      Condiments: [],
+      SixteenMill: [],
+      Beverages: [],
+    };
+
+    items.forEach((item) => {
+      // Check if category exists and is a string
+      const category = item.category?.toLowerCase();
+      if (category) {
+        if (category.includes("main" || "mains")) {
+          categories.Mains.push(item);
+        } else if (category.includes("side" || "sides")) {
+          categories.Sides.push(item);
+        } else if (category.includes("soup" || "soups")) {
+          categories.Soups.push(item);
+        }else if (category.includes("snack" || "snacks")) {
+          categories.Snacks.push(item);
+        }else if (category.includes("beverage" || "beverages" || "drinks" || "drink")) {
+          categories.Beverages.push(item);
+        }else if (category.includes("sweet" || "sweets")) {
+          categories.Sweets.push(item);
+        }else if (category.includes("sixteenmill" || "16mill" || "sixteen mill")) {
+          categories.SixteenMill.push(item);
+        }else if (category.includes("condiment")) {
+          categories.Condiments.push(item);
+        }
+      }
+    });
+
+    return categories;
   };
+
+  const categorizedMenu = categorizeMenuItems(filteredMenu);
 
   return (
     <Grid templateAreas={`"header" "main" "footer"`}>
@@ -97,26 +129,33 @@ const App2 = () => {
       {/* Main Content */}
       <GridItem area={"main"}>
         <SimpleGrid columns={1} spacingX="40px" spacingY="20px">
-          {filteredMenu.length > 0 ? (
-            filteredMenu.map((item, index) => (
-              <Box
-                key={index}
-                height={{ base: "60px", md: "80px" }}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
+          {Object.keys(categorizedMenu).map((category) => (
+            <Box key={category}>
+              <Text
+                m={{ base: 4, md: 6 }}
+                fontSize={{ base: "lg", md: "2xl" }}
+                fontWeight="bold"
               >
-                <Text
-                  m={{ base: 2, md: 4 }}
-                  fontSize={{ base: "md", md: "xl" }}
+                {category}
+              </Text>
+              {categorizedMenu[category].map((item) => (
+                <Box
+                  key={item.id}
+                  height={{ base: "60px", md: "80px" }}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
                 >
-                  {capitalizeWords(item.name)}
-                </Text>
-              </Box>
-            ))
-          ) : (
-            <Text>No items available for your selection.</Text>
-          )}
+                  <Text
+                    m={{ base: 2, md: 4 }}
+                    fontSize={{ base: "md", md: "xl" }}
+                  >
+                    {item.name}
+                  </Text>
+                </Box>
+              ))}
+            </Box>
+          ))}
         </SimpleGrid>
 
         <Box

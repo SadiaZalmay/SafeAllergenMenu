@@ -130,7 +130,6 @@ body>.navbar-collapse {
     width: 260px;
     display: block;
     z-index: 1;
-    color: #fff;
     font-weight: 200;
     background-size: cover;
     background-position: center center;
@@ -160,20 +159,13 @@ body>.navbar-collapse .sidebar-background {
     background-position: center center;
 }
 
-.sidebar .logo,
-body>.navbar-collapse .logo {
-    padding: 10px 15px 9px 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    position: relative;
-    z-index: 4;
-}
+
 
 .sidebar .logo p,
 body>.navbar-collapse .logo p {
     float: left;
     font-size: 20px;
     margin: 10px 10px;
-    color: #FFFFFF;
     line-height: 20px;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -184,7 +176,6 @@ body>.navbar-collapse .logo .simple-text {
     padding: 5px 0px;
     display: block;
     font-size: 18px;
-    color: #FFFFFF;
     text-align: center;
     font-weight: 400;
     line-height: 30px;
@@ -370,19 +361,7 @@ body>.navbar-collapse:before {
     background: #000000;
 }
 
-.sidebar:after,
-body>.navbar-collapse:after {
-    background: #996d92;
-    background: -moz-linear-gradient(top, #9368E9 0%, #943bea 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #9368E9), color-stop(100%, #943bea));
-    background: -webkit-linear-gradient(top, #9368E9 0%, #943bea 100%);
-    background: -o-linear-gradient(top, #9368E9 0%, #943bea 100%);
-    background: -ms-linear-gradient(top, #9368E9 0%, #943bea 100%);
-    background: linear-gradient(to bottom, #9368E9 0%, #943bea 100%);
-    background-size: 150% 150%;
-    z-index: 3;
-    opacity: 1;
-}
+
 
 .sidebar[data-image]:after,
 .sidebar.has-image:after,
@@ -578,21 +557,6 @@ body>.navbar-collapse[data-color="purple"]:after {
     padding: 8px;
 }
 
-.btn-primary {
-    background-color: #cb7171;
-    color: #f1f1f1;
-    border-color: #c48ba6;
-}
-
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active,
-.btn-primary.active,
-.open>.btn-primary.dropdown-toggle {
-    background-color: transparent;
-    color: #ffffff;
-    border-color: #cb7171;
-}
 
 .btn-primary.disabled,
 .btn-primary.disabled:hover,
@@ -847,7 +811,7 @@ fieldset[disabled] .btn-warning.active {
     border-top-color: #FF9500;
 }
 
-.btn-danger {
+/* .btn-danger {
     border-color: #e32f3b;
     color: #FF4A55;
 }
@@ -860,8 +824,8 @@ fieldset[disabled] .btn-warning.active {
     background-color: transparent;
     color: #EE2D20;
     border-color: #EE2D20;
-}
-
+} */
+/* 
 .btn-danger.disabled,
 .btn-danger.disabled:hover,
 .btn-danger.disabled:focus,
@@ -912,7 +876,7 @@ fieldset[disabled] .btn-danger.active {
 
 .btn-danger .caret {
     border-top-color: #FF4A55;
-}
+} */
 
 .btn-neutral {
     border-color: #FFFFFF;
@@ -1371,9 +1335,9 @@ fieldset[disabled] .form-control {
     background-color: #ffbc67;
 }
 
-.alert-danger {
+/* .alert-danger {
     background-color: #fc727a;
-}
+} */
 
 .table .radio,
 .table .checkbox {
@@ -1723,10 +1687,6 @@ fieldset[disabled] .form-control {
     border-radius: 0;
 }
 
-.navbar .nc-icon {
-    font-weight: 700;
-    margin-top: 10px;
-}
 
 .navbar-transparent .navbar-brand,
 [class*="navbar-ct"] .navbar-brand {
@@ -2240,14 +2200,6 @@ fieldset[disabled] .form-control {
 .dropdown-menu.dropdown-red>li>a:hover,
 .dropdown-menu.dropdown-red>li>a:focus {
     background-color: rgba(255, 74, 85, 0.2);
-}
-
-.dropdown-menu .dropdown-item i[class*="nc-icon"] {
-    font-size: 18px;
-    text-align: center;
-    line-height: 25px;
-    float: left;
-    padding-right: 10px;
 }
 
 .dropdown-menu.dropdown-menu-right:before,
@@ -3149,7 +3101,6 @@ fieldset[disabled] .form-control {
 .nc-icon {
     display: inline-block;
     font: normal normal normal 14px/1 'nucleo-icons';
-    font-size: inherit;
     speak: none;
     text-transform: none;
     /* Better Font Rendering */
@@ -3162,33 +3113,7 @@ fieldset[disabled] .form-control {
   list icons
 -------------------------*/
 
-.nc-icon-ul {
-    padding-left: 0;
-    margin-left: 2.14285714em;
-    list-style-type: none;
-}
 
-.nc-icon-ul>li {
-    position: relative;
-}
-
-.nc-icon-ul>li>.nc-icon {
-    position: absolute;
-    left: -1.57142857em;
-    top: 0.14285714em;
-    text-align: center;
-}
-
-.nc-icon-ul>li>.nc-icon.lg {
-    top: 0;
-    left: -1.35714286em;
-}
-
-.nc-icon-ul>li>.nc-icon.circle,
-.nc-icon-ul>li>.nc-icon.square {
-    top: -0.19047619em;
-    left: -1.9047619em;
-}
 
 .all-icons .font-icon-list .font-icon-detail i {
     font-size: 32px;

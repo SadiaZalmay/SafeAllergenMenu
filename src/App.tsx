@@ -23,6 +23,8 @@ const allergensList = [
   "Avocado",
   "Banana",
   "Mushrooms",
+  "Coconut_Oil",
+  "Coconut_Sugar",
 ];
 
 function App() {
@@ -66,76 +68,75 @@ function App() {
     navigate("/App2", { state: { selectedAllergens } });
   };
 
-  return (      
-        <Grid templateAreas={`"header" "main" "footer"`} >
-          {/* Header */}
-          {app.map((item) => (
-          <GridItem area={"header"} key={item.id}>
-            <Box
-              marginTop={15}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Image boxSize="80px" src={item.logo} alt="Logo" />
-            </Box>
-            <Text
-              margin={20}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <b>{item.paragraph1}</b>
-            </Text>
-          </GridItem>
-        ))}
+  return (
+    <Grid templateAreas={`"header" "main" "footer"`}>
+      {/* Header */}
+      {app.map((item) => (
+        <GridItem area={"header"} key={item.id}>
+          <Box
+            marginTop={15}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Image boxSize="80px" src={item.logo} alt="Logo" />
+          </Box>
+          <Text
+            margin={20}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <b>{item.paragraph1}</b>
+          </Text>
+        </GridItem>
+      ))}
 
-          {/* Main Content */}
-          <GridItem area={"main"}>
-            <SimpleGrid columns={2} spacingX="40px" spacingY="20px">
-              {allergensList.map((allergen) => (
-                <Box
-                  key={allergen}
-                  height="80px"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <label className="custom-checkbox">
-                    <input
-                      type="checkbox"
-                      onChange={() => handleCheckboxChange(allergen)}
-                    />
-                    <span className="checkbox-indicator"></span>
-                  </label>
-                  <Text margin={10}>
-                    <b>{allergen}</b>
-                  </Text>
-                </Box>
-              ))}
-            </SimpleGrid>
+      {/* Main Content */}
+      <GridItem area={"main"}>
+        <SimpleGrid columns={2} spacingX="40px" spacingY="20px">
+          {allergensList.map((allergen) => (
             <Box
+              key={allergen}
               height="80px"
               display="flex"
               alignItems="center"
               justifyContent="center"
             >
-              <Stack direction="row" align="center">
-                <Submit onClick={handleSubmit}>Submit</Submit>
-              </Stack>
+              <label className="custom-checkbox">
+                <input
+                  type="checkbox"
+                  onChange={() => handleCheckboxChange(allergen)}
+                />
+                <span className="checkbox-indicator"></span>
+              </label>
+              <Text margin={10}>
+                <b>{allergen}</b>
+              </Text>
             </Box>
-          </GridItem>
-
-          {/* Footer */}
-          {app.map((item) => (
-          <GridItem area={"footer"} key={item.id}>
-            <Text margin={20}>
-              <b>{item.paragraph2}</b>
-            </Text>
-          </GridItem>
           ))}
-        </Grid>
-      
+        </SimpleGrid>
+        <Box
+          height="80px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Stack direction="row" align="center">
+            <Submit onClick={handleSubmit}>Submit</Submit>
+          </Stack>
+        </Box>
+      </GridItem>
+
+      {/* Footer */}
+      {app.map((item) => (
+        <GridItem area={"footer"} key={item.id}>
+          <Text margin={20}>
+            <b>{item.paragraph2}</b>
+          </Text>
+        </GridItem>
+      ))}
+    </Grid>
   );
 }
 

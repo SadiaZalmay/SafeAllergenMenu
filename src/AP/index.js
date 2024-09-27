@@ -18,7 +18,6 @@ const saltRounds = 10;
 //      INITIALIZATION
 //==============================
 const app = express();
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -336,8 +335,8 @@ app.get("/api/menu/", (req, res) => {
 //---------------------------------
 app.post("/api/menuadd", (req, res) => {
   const query =
-    "INSERT INTO menu (`name`, `ingredients`, `allergens`) VALUES (?)"; // SQL query to insert a new menu item
-  const values = [req.body.name, req.body.ingredients, req.body.allergens]; // Values from request body
+    "INSERT INTO menu (`name`, `ingredients`, `category`) VALUES (?)"; // SQL query to insert a new menu item
+  const values = [req.body.name, req.body.ingredients, req.body.category]; // Values from request body
 
   connection.query(query, [values], (err) => {
     if (err) return res.status(500).json(err); // Handle error
@@ -367,8 +366,8 @@ app.delete("/api/menu/:id", (req, res) => {
 app.put("/api/menu/:id", (req, res) => {
   const menuId = req.params.id; // Get the menu ID from URL parameters
   const query =
-    "UPDATE menu SET name = ?, ingredients = ?, allergens = ? WHERE id = ?"; // SQL query to update a menu item
-  const values = [req.body.name, req.body.ingredients, req.body.allergens]; // New values from request body
+    "UPDATE menu SET name = ?, ingredients = ?, category = ? WHERE id = ?"; // SQL query to update a menu item
+  const values = [req.body.name, req.body.ingredients, req.body.category]; // New values from request body
 
   connection.query(query, [...values, menuId], (err) => {
     if (err) {
@@ -487,8 +486,8 @@ app.get("/api/app2/", (req, res) => {
 //       FILTER MENU BASED ON ALLERGENS
 //---------------------------------------
 app.post("/filterMenu", (req, res) => {
-  console.log("Request received with allergens:", req.body.allergens); // Log received allergens
-  const { allergens } = req.body; // Destructure allergens from request body
+  console.log("Request received with allergens:", req.body.allergens);
+  const { allergens } = req.body;
 
   // Define allergen keywords
   const allergenKeywords = {
@@ -504,32 +503,43 @@ app.post("/filterMenu", (req, res) => {
     Soy: ["soybean", "tofu", "tempeh", "miso"],
     Sesame: ["sesame", "tahini"],
     Peanut: ["peanut"],
-    Wheat: ["wheat", "gluten"],
+    Wheat: ["wheat", "gluten", "all purpose flour"],
     Garlic: ["garlic"],
     Avocado: ["avocado"],
     Banana: ["banana"],
     Mushrooms: ["mushroom"],
+    Coconut_Oil: ["coconut oil"],
+    Coconut_Sugar: ["coconut sugar"],
   };
 
-  const allergensSet = new Set(allergens); // Convert allergens to a Set for easier lookup
+  const allergensSet = new Set(allergens);  ///change this if an issue to allergens
   const keywordsToExclude = Object.entries(allergenKeywords)
-    .filter(([key]) => allergensSet.has(key)) // Get keywords for allergens that are set
-    .flatMap(([, keywords]) => keywords); // Flatten the array of keywords
+    .filter(([key]) => allergensSet.has(key))
+    .flatMap(([, keywords]) => keywords.map(keyword => keyword.toLowerCase()));
 
   // Fetch menu items from the database
   connection.query("SELECT * FROM menu", (error, results) => {
     if (error) {
-      return res.status(500).json({ error: "Database query failed" }); // Handle error
+      return res.status(500).json({ error: "Database query failed" });
     }
 
-    const filteredItems = results.filter(
-      (item) =>
-        !keywordsToExclude.some((keyword) =>
-          item.ingredients.toLowerCase().includes(keyword.toLowerCase())
-        )
-    ); // Filter out items containing allergens
+    const filteredItems = results.filter((item) => {
+      // Normalize ingredients
+      const normalizedIngredients = item.ingredients
+        .toLowerCase() // Convert to lowercase
+        .split(',') // Split by comma
+        .map(ingredient => ingredient.trim()) // Trim spaces
+        .join(','); // Join back into a string if needed
 
-    res.json(filteredItems); // Send filtered items as JSON response
+      console.log("Item Ingredients:", normalizedIngredients);
+      console.log("Keywords to Exclude:", keywordsToExclude);
+
+      return !keywordsToExclude.some((keyword) =>
+        normalizedIngredients.includes(keyword) // Check for inclusion
+      );
+    });
+
+    res.json(filteredItems);
   });
 });
 

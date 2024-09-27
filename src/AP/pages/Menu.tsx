@@ -10,7 +10,7 @@ interface Menu {
   id: number;
   name: string;
   ingredients: string;
-  allergens: string;
+  category: string;
 }
 
 const Menu: React.FC = () => {
@@ -61,9 +61,11 @@ const Menu: React.FC = () => {
       console.error("Logout failed:", err);
     }
   };
-  const capitalizeWords = (str: string) => {
+  const capitalizeWords = (str: string | undefined) => {
+    if (!str) return ''; // Return an empty string if the input is undefined or empty
     return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
   };
+  
 
   return (
     <div>
@@ -116,7 +118,7 @@ const Menu: React.FC = () => {
                   <li className="nav-item">
                     <a href="#" className="nav-link" data-toggle="dropdown">
                       <i className="nc-icon nc-palette"></i>
-                      <span className="d-lg-none">Dashboard</span>
+                      <span className="d-lg-none" >Dashboard</span>
                     </a>
                   </li>
                 </ul>
@@ -124,7 +126,7 @@ const Menu: React.FC = () => {
                   <Dropdown className="nav-item dropdown">
                     <Dropdown.Toggle
                       variant="text"
-                      className="nav-link dropdown-toggle"
+                      className="tb  dropdown-toggle"
                     >
                       Account
                     </Dropdown.Toggle>
@@ -151,10 +153,15 @@ const Menu: React.FC = () => {
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                       backgroundColor: "rgb(94, 2, 49)",
+                      borderRadius: "20px", // Round border
+                      border: "2px solid black",
                     }}
                   >
                     <div className="card-header">
-                      <h4 className="card-title" style={{ margin: "20px" }}>
+                      <h4
+                        className="card-title"
+                        style={{ color: "white", margin: "20px" }}
+                      >
                         Menu
                       </h4>
                     </div>
@@ -173,11 +180,9 @@ const Menu: React.FC = () => {
                                     aria-describedby="basic-addon2"
                                     name="search1"
                                   />
-                                  <div className="input-group-append">
+                                  <div>
                                     <button
-                                      className="btn btn-primary"
-                                      type="submit"
-                                      name="search"
+                                      className="text-button"
                                     >
                                       <i className="nc-icon nc-zoom-split"></i>
                                     </button>
@@ -209,7 +214,7 @@ const Menu: React.FC = () => {
                             <tr>
                               <th>Name</th>
                               <th>Ingredients</th>
-                              <th>Allergen</th>
+                              <th>Category</th>
                               <th>Edit</th>
                               <th>Delete</th>
                             </tr>
@@ -219,7 +224,7 @@ const Menu: React.FC = () => {
                               <tr key={item.id}>
                                 <td>{capitalizeWords(item.name)}</td>
                                 <td>{capitalizeWords(item.ingredients)}</td>
-                                <td>{capitalizeWords(item.allergens)}</td>
+                                <td>{capitalizeWords(item.category)}</td>
                                 <td className="text-center">
                                   <Link to={`/MenuEdit/${item.id}`}>
                                     <Button variant="info">Edit</Button>
