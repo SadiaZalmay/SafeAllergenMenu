@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Submit from "./components/Submit";
 import axios from "axios";
+import purpleImage from './assets/ivory.png';
 
 // List of allergens to display as checkboxes
 const allergensList = [
@@ -69,7 +70,12 @@ function App() {
   };
 
   return (
-    <Grid templateAreas={`"header" "main" "footer"`}>
+    <Grid
+      templateAreas={`"header" "main" "footer"`}
+      backgroundImage={`url(${purpleImage})`}
+      backgroundSize="cover"
+      backgroundPosition="center"
+    >
       {/* Header */}
       {app.map((item) => (
         <GridItem area={"header"} key={item.id}>
@@ -86,6 +92,8 @@ function App() {
             display="flex"
             alignItems="center"
             justifyContent="center"
+            fontFamily="Roboto, sans-serif" // Change font family here
+            fontSize="20px" // Optional: adjust font size
           >
             <b>{item.paragraph1}</b>
           </Text>
@@ -110,7 +118,11 @@ function App() {
                 />
                 <span className="checkbox-indicator"></span>
               </label>
-              <Text margin={10}>
+              <Text
+                margin={10}
+                fontFamily="Roboto, sans-serif" // Apply font family here
+                fontSize="18px"
+              >
                 <b>{allergen}</b>
               </Text>
             </Box>
@@ -131,7 +143,11 @@ function App() {
       {/* Footer */}
       {app.map((item) => (
         <GridItem area={"footer"} key={item.id}>
-          <Text margin={20}>
+          <Text
+            margin={20}
+            fontFamily="Roboto, sans-serif" // Apply font family here
+            fontSize="20px"
+          >
             <b>{item.paragraph2}</b>
           </Text>
         </GridItem>

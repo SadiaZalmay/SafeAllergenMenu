@@ -1,17 +1,8 @@
-import {
-  Box,
-  SimpleGrid,
-  Text,
-  Image,
-  Grid,
-  GridItem,
-  Stack,
-} from "@chakra-ui/react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Box, SimpleGrid, Text, Image } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import Previous from "./components/Previous";
-import "./App.css";
+import "./App2.css"; 
+import purpleImage from "./assets/ivory.png";
 
 const App2 = () => {
   interface App2Item {
@@ -24,13 +15,13 @@ const App2 = () => {
   interface App2Allergens {
     id: number;
     name: string;
-    category?: string; // Make allergen optional to prevent TypeErrors
+    category?: string;
   }
 
-  const location = useLocation();
-  const { selectedAllergens } = location.state || { selectedAllergens: [] }; // Default to empty array if undefined
   const [filteredMenu, setFilteredMenu] = useState<App2Allergens[]>([]);
   const [app2, setApp2] = useState<App2Item[]>([]);
+  const [activeSection, setActiveSection] = useState("Sides");
+  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
     const fetchAllApp2 = async () => {
@@ -48,7 +39,7 @@ const App2 = () => {
     const fetchFilteredMenu = async () => {
       try {
         const response = await axios.post("http://localhost:5000/filterMenu", {
-          allergens: selectedAllergens,
+          allergens: [],
         });
         setFilteredMenu(response.data);
       } catch (err) {
@@ -59,7 +50,7 @@ const App2 = () => {
       }
     };
     fetchFilteredMenu();
-  }, [selectedAllergens]);
+  }, []);
 
   const categorizeMenuItems = (items: App2Allergens[]) => {
     const categories = {
@@ -74,26 +65,18 @@ const App2 = () => {
     };
 
     items.forEach((item) => {
-      // Check if category exists and is a string
       const category = item.category?.toLowerCase();
       if (category) {
-        if (category.includes("main" || "mains")) {
-          categories.Mains.push(item);
-        } else if (category.includes("side" || "sides")) {
-          categories.Sides.push(item);
-        } else if (category.includes("soup" || "soups")) {
-          categories.Soups.push(item);
-        }else if (category.includes("snack" || "snacks")) {
-          categories.Snacks.push(item);
-        }else if (category.includes("beverage" || "beverages" || "drinks" || "drink")) {
-          categories.Beverages.push(item);
-        }else if (category.includes("sweet" || "sweets")) {
-          categories.Sweets.push(item);
-        }else if (category.includes("sixteenmill" || "16mill" || "sixteen mill")) {
+        if (category.includes("main")) categories.Mains.push(item);
+        else if (category.includes("side")) categories.Sides.push(item);
+        else if (category.includes("soup")) categories.Soups.push(item);
+        else if (category.includes("snack")) categories.Snacks.push(item);
+        else if (category.includes("beverage")) categories.Beverages.push(item);
+        else if (category.includes("sweet")) categories.Sweets.push(item);
+        else if (category.includes("sixteenmill"))
           categories.SixteenMill.push(item);
-        }else if (category.includes("condiment")) {
+        else if (category.includes("condiment"))
           categories.Condiments.push(item);
-        }
       }
     });
 
@@ -102,35 +85,77 @@ const App2 = () => {
 
   const categorizedMenu = categorizeMenuItems(filteredMenu);
 
-  return (
-    <Grid templateAreas={`"header" "main" "footer"`}>
-      {/* Header */}
-      {app2.map((item) => (
-        <GridItem area={"header"} key={item.id}>
-          <Box
-            marginTop={15}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Image boxSize="80px" src={item.logo} alt="Logo" />
-          </Box>
-          <Text
-            margin={20}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <b>{item.paragraph1}</b>
-          </Text>
-        </GridItem>
-      ))}
+  useEffect(() => {
+    const handleScroll = () => {
+      for (const category in sectionRefs.current) {
+        const section = sectionRefs.current[category];
+        if (section && section.getBoundingClientRect().top <= 100) {
+          setActiveSection(category);
+        }
+      }
+    };
 
-      {/* Main Content */}
-      <GridItem area={"main"}>
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToSection = (section: string) => {
+    sectionRefs.current[section]?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <Box
+      backgroundImage={`url(${purpleImage})`}
+      backgroundSize="cover"
+      backgroundPosition="center"
+      height="100vh" // Set the height to 100vh to utilize the full viewport
+      display="flex"
+      flexDirection="column"
+    >
+      {/* Header */}
+      <Box className="header" position="fixed" width="100%" zIndex={1}>
+        {app2.map((item) => (
+          <Box key={item.id}>
+            <Image boxSize="80px" src={item.logo} alt="Logo" />
+            <Text marginTop="10px">
+              <b>{item.paragraph1}</b>
+            </Text>
+          </Box>
+        ))}
+      </Box>
+
+      {/*Navbar */}
+      <Box className="navbar" mt="80px">
         <SimpleGrid columns={1} spacingX="40px" spacingY="20px">
           {Object.keys(categorizedMenu).map((category) => (
-            <Box key={category}>
+            <Text
+              key={category}
+              className={`navbar-item ${
+                activeSection === category ? "active" : ""
+              }`}
+              onClick={() => scrollToSection(category)}
+            >
+              {category}
+            </Text>
+          ))}
+        </SimpleGrid>
+      </Box>
+
+      {/* Main Content */}
+      <Box
+        className="main"
+        flex="1"
+        overflowY="scroll"
+        mt="-50px"
+        padding="20px"
+      >
+        <SimpleGrid columns={1} spacingX="40px" spacingY="20px">
+          {Object.keys(categorizedMenu).map((category) => (
+            <Box
+              key={category}
+              ref={(el) => (sectionRefs.current[category] = el)}
+              mt="80px"
+            >
               <Text
                 m={{ base: 4, md: 6 }}
                 fontSize={{ base: "lg", md: "2xl" }}
@@ -146,41 +171,29 @@ const App2 = () => {
                   alignItems="center"
                   justifyContent="center"
                 >
-                  <Text
-                    m={{ base: 2, md: 4 }}
-                    fontSize={{ base: "md", md: "xl" }}
-                  >
-                    {item.name}
-                  </Text>
+                  <Text className="food-item">{item.name}</Text>
                 </Box>
               ))}
             </Box>
           ))}
         </SimpleGrid>
-
-        <Box
-          height="80px"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Stack direction="row" align="center">
-            <Link to="/">
-              <Previous />
-            </Link>
-          </Stack>
-        </Box>
-      </GridItem>
+      </Box>
 
       {/* Footer */}
-      {app2.map((item) => (
-        <GridItem area={"footer"} key={item.id}>
-          <Text margin={20}>
+      <Box
+        className="footer"
+        position="fixed"
+        width="100%"
+        bottom="0"
+        zIndex={1}
+      >
+        {app2.map((item) => (
+          <Text margin={20} key={item.id}>
             <b>{item.paragraph2}</b>
           </Text>
-        </GridItem>
-      ))}
-    </Grid>
+        ))}
+      </Box>
+    </Box>
   );
 };
 

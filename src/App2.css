@@ -1,0 +1,42 @@
+.header,
+.footer {
+  background: url('./assets/green.png'); /* Background image */
+  background-size: cover; /* Cover the entire area */
+  padding: 10px;
+  z-index: 1;
+  opacity: 0.8; /* Optional: Adjust opacity if needed */
+}
+
+.navbar {
+  display: flex; /* Use flexbox layout */
+  flex-direction: column; /* Stack items vertically */
+  position: fixed; /* Fixed position for navbar */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  height: 100vh; /* Full height */
+  width: 200px; /* Adjust width as needed */
+  background-size: cover; /* Cover the entire area */
+  padding: 20px; /* Padding for the navbar */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: Adds shadow to navbar */
+  z-index: 1;
+}
+  
+.navbar-item {
+  display: block; /* Ensure each item is a block element */
+  font-size: 1.2rem; /* Adjust font size as needed */
+  margin-bottom: 10px; /* Add spacing between items */
+  padding: 10px; /* Add padding for better clickable area */
+  cursor: pointer; /* Indicate it's clickable */
+  width: 100%; /* Ensure it takes the full width */
+}
+/* Hover effect applied directly on navbar-item */
+.navbar-item:hover {
+    background-color: aliceblue; /* Background color on hover */
+  }
+
+.main {
+  margin-left: 220px; /* Leave space for the fixed navbar */
+  max-height: calc(100vh - 160px); /* Adjust height based on fixed header and footer */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 10px; /* Add some padding for content spacing */
+}

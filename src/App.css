@@ -5,7 +5,7 @@
   width: 24px; /* Size of the checkbox */
   height: 24px; /* Size of the checkbox */
   border-radius: 50%; /* Makes it circular */
-  border: 2px solid #ccc; /* Grey border when not selected */
+  border: 3px solid #14801b; /* Grey border when not selected */
 }
 
 .custom-checkbox input {
@@ -25,3 +25,4 @@
   background-color: green; /* green background when selected */
   border: 2px solid green; /* green border when selected */
 }
+
