@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Box, SimpleGrid, Text, Image } from "@chakra-ui/react";
 import axios from "axios";
-import "./App2.css"; 
-import purpleImage from "./assets/ivory.png";
+import "./App2.css";
 
 const App2 = () => {
   interface App2Item {
@@ -43,10 +42,7 @@ const App2 = () => {
         });
         setFilteredMenu(response.data);
       } catch (err) {
-        console.error(
-          "Couldn't get the filtered menu. Problem with backend server:",
-          err
-        );
+        console.error("Couldn't get the filtered menu. Problem with backend server:", err);
       }
     };
     fetchFilteredMenu();
@@ -73,10 +69,8 @@ const App2 = () => {
         else if (category.includes("snack")) categories.Snacks.push(item);
         else if (category.includes("beverage")) categories.Beverages.push(item);
         else if (category.includes("sweet")) categories.Sweets.push(item);
-        else if (category.includes("sixteenmill"))
-          categories.SixteenMill.push(item);
-        else if (category.includes("condiment"))
-          categories.Condiments.push(item);
+        else if (category.includes("sixteenmill")) categories.SixteenMill.push(item);
+        else if (category.includes("condiment")) categories.Condiments.push(item);
       }
     });
 
@@ -85,54 +79,41 @@ const App2 = () => {
 
   const categorizedMenu = categorizeMenuItems(filteredMenu);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      for (const category in sectionRefs.current) {
-        const section = sectionRefs.current[category];
-        if (section && section.getBoundingClientRect().top <= 100) {
-          setActiveSection(category);
-        }
+  const handleScroll = useCallback(() => {
+    for (const category in sectionRefs.current) {
+      const section = sectionRefs.current[category];
+      if (section && section.getBoundingClientRect().top <= 100) {
+        setActiveSection(category);
       }
-    };
+    }
+  }, []);
 
+  useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   const scrollToSection = (section: string) => {
     sectionRefs.current[section]?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <Box
-      backgroundImage={`url(${purpleImage})`}
-      backgroundSize="cover"
-      backgroundPosition="center"
-      height="100vh" // Set the height to 100vh to utilize the full viewport
-      display="flex"
-      flexDirection="column"
-    >
-      {/* Header */}
-      <Box className="header" position="fixed" width="100%" zIndex={1}>
+    <Box className="app-container">
+      <Box className="header">
         {app2.map((item) => (
           <Box key={item.id}>
-            <Image boxSize="80px" src={item.logo} alt="Logo" />
-            <Text marginTop="10px">
-              <b>{item.paragraph1}</b>
-            </Text>
+            <Image src={item.logo} alt="Logo" />
+            <Text><b>{item.paragraph1}</b></Text>
           </Box>
         ))}
       </Box>
 
-      {/*Navbar */}
-      <Box className="navbar" mt="80px">
-        <SimpleGrid columns={1} spacingX="40px" spacingY="20px">
+      <Box className="navbar">
+        <SimpleGrid>
           {Object.keys(categorizedMenu).map((category) => (
             <Text
               key={category}
-              className={`navbar-item ${
-                activeSection === category ? "active" : ""
-              }`}
+              className={`navbar-item ${activeSection === category ? "active" : ""}`}
               onClick={() => scrollToSection(category)}
             >
               {category}
@@ -141,36 +122,17 @@ const App2 = () => {
         </SimpleGrid>
       </Box>
 
-      {/* Main Content */}
-      <Box
-        className="main"
-        flex="1"
-        overflowY="scroll"
-        mt="-50px"
-        padding="20px"
-      >
-        <SimpleGrid columns={1} spacingX="40px" spacingY="20px">
+      <Box className="main">
+        <SimpleGrid>
           {Object.keys(categorizedMenu).map((category) => (
             <Box
               key={category}
               ref={(el) => (sectionRefs.current[category] = el)}
-              mt="80px"
+              className="category-section"
             >
-              <Text
-                m={{ base: 4, md: 6 }}
-                fontSize={{ base: "lg", md: "2xl" }}
-                fontWeight="bold"
-              >
-                {category}
-              </Text>
+              <Text className="category-title">{category}</Text>
               {categorizedMenu[category].map((item) => (
-                <Box
-                  key={item.id}
-                  height={{ base: "60px", md: "80px" }}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                >
+                <Box key={item.id} className="food-item-container">
                   <Text className="food-item">{item.name}</Text>
                 </Box>
               ))}
@@ -179,18 +141,9 @@ const App2 = () => {
         </SimpleGrid>
       </Box>
 
-      {/* Footer */}
-      <Box
-        className="footer"
-        position="fixed"
-        width="100%"
-        bottom="0"
-        zIndex={1}
-      >
+      <Box className="footer">
         {app2.map((item) => (
-          <Text margin={20} key={item.id}>
-            <b>{item.paragraph2}</b>
-          </Text>
+          <Text key={item.id}><b>{item.paragraph2}</b></Text>
         ))}
       </Box>
     </Box>
