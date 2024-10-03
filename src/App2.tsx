@@ -19,7 +19,7 @@ const App2 = () => {
 
   const [filteredMenu, setFilteredMenu] = useState<App2Allergens[]>([]);
   const [app2, setApp2] = useState<App2Item[]>([]);
-  const [activeSection, setActiveSection] = useState("Sides");
+  const [activeSection, setActiveSection] = useState();
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
@@ -42,7 +42,10 @@ const App2 = () => {
         });
         setFilteredMenu(response.data);
       } catch (err) {
-        console.error("Couldn't get the filtered menu. Problem with backend server:", err);
+        console.error(
+          "Couldn't get the filtered menu. Problem with backend server:",
+          err
+        );
       }
     };
     fetchFilteredMenu();
@@ -69,8 +72,10 @@ const App2 = () => {
         else if (category.includes("snack")) categories.Snacks.push(item);
         else if (category.includes("beverage")) categories.Beverages.push(item);
         else if (category.includes("sweet")) categories.Sweets.push(item);
-        else if (category.includes("sixteenmill")) categories.SixteenMill.push(item);
-        else if (category.includes("condiment")) categories.Condiments.push(item);
+        else if (category.includes("sixteenmill"))
+          categories.SixteenMill.push(item);
+        else if (category.includes("condiment"))
+          categories.Condiments.push(item);
       }
     });
 
@@ -94,7 +99,14 @@ const App2 = () => {
   }, [handleScroll]);
 
   const scrollToSection = (section: string) => {
-    sectionRefs.current[section]?.scrollIntoView({ behavior: "smooth" });
+    const targetSection = sectionRefs.current[section];
+    if (targetSection) {
+      targetSection.scrollIntoView({ behavior: "smooth" });
+      setActiveSection(section); // Set the active section here
+      console.log(`Scrolling to: ${section}`);
+    } else {
+      console.error(`Section ${section} not found`);
+    }
   };
 
   return (
@@ -103,17 +115,21 @@ const App2 = () => {
         {app2.map((item) => (
           <Box key={item.id}>
             <Image src={item.logo} alt="Logo" />
-            <Text><b>{item.paragraph1}</b></Text>
+            <Text>
+              <b>{item.paragraph1}</b>
+            </Text>
           </Box>
         ))}
       </Box>
 
-      <Box className="navbar">
+      <Box className="sidebar">
         <SimpleGrid>
           {Object.keys(categorizedMenu).map((category) => (
             <Text
               key={category}
-              className={`navbar-item ${activeSection === category ? "active" : ""}`}
+              className={`sidebar-item ${
+                activeSection === category ? "active" : ""
+              }`}
               onClick={() => scrollToSection(category)}
             >
               {category}
@@ -143,7 +159,9 @@ const App2 = () => {
 
       <Box className="footer">
         {app2.map((item) => (
-          <Text key={item.id}><b>{item.paragraph2}</b></Text>
+          <Text key={item.id}>
+            <b>{item.paragraph2}</b>
+          </Text>
         ))}
       </Box>
     </Box>
