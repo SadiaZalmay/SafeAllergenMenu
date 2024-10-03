@@ -1,3 +1,7 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "typescript.experimental.updateImportsOnPaste": true,
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "typescript.format.insertSpaceAfterTypeAssertion": true,
+    "typescript.inlayHints.functionLikeReturnTypes.enabled": true
 }

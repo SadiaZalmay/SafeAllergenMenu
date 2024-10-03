@@ -1,58 +1,115 @@
-.header, .footer {
-  background: url("./assets/green.png") no-repeat center center;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+
+.footer {
+  background: url("./assets/ivory.png") no-repeat center center;
   background-size: cover;
-  padding: 20px;
-  opacity: 0.9;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: rgb(34, 30, 30);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+    font-family: 'Poppins', sans-serif;
+
+}
+.header {
+  background: url("./assets/ivory.png") no-repeat center center;
+  background-size: cover;
+  display: flex;
+  flex-direction: column; /* Stack logo on top of text */
+  justify-content: center;
+  align-items: left;
+  padding-left: 40px;
+  height: 90px; /* Increased height for spacing */
   color: ivory;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
-.sidebar {
-  height: calc(100vh - 160px); /* Full height minus header and footer */
-  text-align: center;
-  padding-top: 20px;
-  overflow-y: auto; 
+.header-logo {
+  width: 60px;
+  height: auto;
+  margin-bottom: 10px; /* Adds space between logo and text */
 }
 
-.sidebar-item {
+
+.header-item {
+  display: flex;
+  align-items: center;
+  margin: 0 15px;
+}
+
+
+.side {
+  width: 280px;
+  padding: 10px;
+  color: ivory;
+  position: fixed;
+  top: 80px; /* Adjusted for header height */
+  bottom: 0;
+  background: url("./assets/purple.png");
+  background-size: cover;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.side-item {
   font-size: 1.2rem;
   margin-bottom: 15px;
   padding: 10px;
-  color: white;
+  color: ivory;
   text-align: center;
-  border-radius: 5px;
-  cursor: pointer; /* Ensure it's clickable */
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s, color 0.3s;
+  font-family: 'Poppins', sans-serif;
+
 }
 
-.sidebar-item:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+.full-menu{
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  padding: 10px;
+  color: ivory;
+  text-align: center;
+  cursor: pointer;
+  background-color: rgba(70, 6, 49, 0.9); /* Purple with opacity */
+  font-weight: bold;
+  color: ivory;
+  font-family: 'Poppins', sans-serif;
+
+}
+
+.side-item:hover {
+  background-color: rgba(70, 6, 49, 0.9); /* Purple with opacity */
   transform: scale(1.05);
   font-weight: bold;
+  color: ivory;
 }
 
-
 .main {
-  margin-left: 250px; 
-  padding: 20px;
+  background: url("./assets/ivory.png");
+  margin-left: 280px;
+  padding: 10px;
   font-weight: normal;
   background-color: #f9f9f9;
   box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
-  overflow-y: scroll; 
-  height: calc(100vh - 160px);
-  scroll-behavior: smooth; 
+  overflow-y: auto;
+  height: calc(100vh - 160px - -20px); /* Subtract footer height */
+  font-family: 'Poppins', sans-serif;
+
 }
 
 .category-title {
-  color: rgb(53, 52, 52);
-  padding: 15px;
+  color: #000000;
+  font-weight: bold;
+  padding: 10px;
+  padding-left: 25px;
   border-bottom: 3px solid #d4542d;
-  text-align: center;
-  margin-bottom: 20px;
+  text-align: left;
+  margin-bottom: 0px;
   font-size: 28px;
-  background-color: rgba(255, 255, 255, 0.8);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -62,12 +119,39 @@
   padding-bottom: 20px;
 }
 
+.food-item-container {
+  padding: 15px;
+  border-radius: 8px;
+  color: #11610a;
+  font-weight: bold;
+  margin: 15px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.2); /* Enhanced hover shadow */
+  transition: transform 0.2s, box-shadow 0.3s;
+  font-family: 'Poppins', sans-serif;
+
+}
+
+.food-item-container:hover {
+  transform: scale(1.01);
+  box-shadow: 0 1px 1px #b55c40;
+
+}
+
+.footer {
+  padding: 15px;
+  height: 80px;
+}
+
 @media (max-width: 768px) {
-  .sidebar {
-    width: 100%; /* Full width for mobile */
-    height: auto; /* Adjust height */
+  .side {
+    width: 100%; 
+    height: auto;
+    position: relative;
+    top: auto;
   }
+  
   .main {
-    margin-left: 0; /* Adjust main content margin */
+    margin-left: 0;
+    padding: 20px;
   }
 }

@@ -13,7 +13,6 @@ import Submit from "./components/Submit";
 import axios from "axios";
 import purpleImage from './assets/ivory.png';
 
-// List of allergens to display as checkboxes
 const allergensList = [
   "Wheat",
   "Sesame",
