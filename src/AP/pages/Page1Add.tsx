@@ -179,7 +179,7 @@ const Page1Add: React.FC = () => {
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={(e) => handleFileChange(e)}
+                          onChange={(e) => handleChange(e)}
                         />
                         <input
                           type="text"

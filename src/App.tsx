@@ -1,3 +1,4 @@
+"use client"; 
 import { useState, useEffect } from "react";
 import {
   Box,
@@ -11,7 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Submit from "./components/Submit";
 import axios from "axios";
-import purpleImage from './assets/ivory.png';
+import ivory from './assets/ivory.png';
 
 const allergensList = [
   "Wheat",
@@ -71,7 +72,7 @@ function App() {
   return (
     <Grid
       templateAreas={`"header" "main" "footer"`}
-      backgroundImage={`url(${purpleImage})`}
+      backgroundImage={`url(${ivory})`}
       backgroundSize="cover"
       backgroundPosition="center"
     >
